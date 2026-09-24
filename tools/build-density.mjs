@@ -41,7 +41,23 @@ import { GRAINS, cost, regions, spread } from '../src/lib/density.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (rel) => readFileSync(resolve(root, rel))
-const sha = (buf) => createHash('sha256').update(buf).digest('hex')
+/**
+ * The hash of the **text**, not of the bytes on this disk.
+ *
+ * Hashing `readFileSync()` straight was wrong and provably so. Git stores text
+ * with LF and checks it out with CRLF wherever `core.autocrlf` is on, which is
+ * the default on Windows, so the same committed file has two different sha256
+ * values depending on who cloned it. Measured on this repository's own input:
+ * `data/contract.md` hashes `1ba90de0cc3cd6d4` on the machine it was written on
+ * and `819fde8663378c9e` in a fresh clone, because the working copy carries 293
+ * CRLF pairs and the blob carries none.
+ *
+ * That is not a nuisance, it is a gate that fails everywhere except the one
+ * machine that wrote it, which is the exact opposite of what a provenance hash
+ * is for. Normalising the line endings first makes the value a property of the
+ * document rather than of the checkout.
+ */
+const sha = (buf) => createHash('sha256').update(buf.toString('utf8').replace(/\r\n/g, '\n'), 'utf8').digest('hex')
 
 /** The cadence the contract sets for itself, and the window to price over. */
 export const CADENCE = { minutesPerSend: 30, sendsPerDay: 48, days: 30 }

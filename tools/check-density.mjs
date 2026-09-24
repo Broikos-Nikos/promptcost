@@ -46,7 +46,14 @@ for (const [key, label] of [
   ['pricing', 'the price table'],
 ]) {
   const recorded = d.inputs[key]
-  const now = createHash('sha256').update(read(recorded.file)).digest('hex')
+  /*
+   * Normalised before hashing, for the reason in `build-density.mjs`: git
+   * checks the same committed text out with CRLF on Windows and LF elsewhere,
+   * so the raw bytes gave this gate a value that only held on the machine that
+   * wrote it. `data/contract.md` hashed `1ba90de0cc3cd6d4` here and
+   * `819fde8663378c9e` in a clone, and the first push would have failed CI.
+   */
+  const now = createHash('sha256').update(read(recorded.file).toString('utf8').replace(/\r\n/g, '\n'), 'utf8').digest('hex')
   if (now !== recorded.sha256) {
     fail(
       `${label} is not the file the measurement was taken from`,

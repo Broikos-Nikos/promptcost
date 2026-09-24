@@ -114,7 +114,7 @@ their sha256 is written into the measurement, so
 `node tools/check-density.mjs` can refuse a figure computed from a file that has
 since moved. The prompt is the build contract of the workspace these projects
 are built in, committed here at `data/contract.md`,
-sha256 `1ba90de0cc3cd6d4`.
+sha256 `819fde8663378c9e`.
 
 ## The gates
 

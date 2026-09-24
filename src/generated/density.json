@@ -4,7 +4,7 @@
   "inputs": {
     "contract": {
       "file": "data/contract.md",
-      "sha256": "1ba90de0cc3cd6d4fea6fb11b621ff99f9167071f0ae6b1d9190d8804d8fa2a5"
+      "sha256": "819fde8663378c9e94f05fd02fb0e9bfce72b1d075577eb935a7dac768a8c60a"
     },
     "pricing": {
       "file": "data/pricing.json",
