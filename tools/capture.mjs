@@ -169,9 +169,29 @@ try {
   renameSync(webm, resolve(root, 'docs/grain.webm'))
   rmSync(WORK, { recursive: true, force: true })
 
+  /*
+   * The size goes in the manifest, so `check:capture` can hold the committed
+   * GIF to the byte it was written at rather than to a round ceiling. A fixed
+   * ceiling permits silent growth right up to it, which is an open finding
+   * against `tokenlab` for exactly this reason: its cap is 4 MB and its picture
+   * is 2.77 MB, so a megabyte can appear with nothing saying so. Here any change
+   * at all shows as a diff in this file and has to be committed on purpose.
+   */
   writeFileSync(
     resolve(root, 'docs/capture.json'),
-    JSON.stringify({ recorded: new Date().toISOString().slice(0, 10), fps: FPS, width: WIDTH, crop, seconds: Number(seconds.toFixed(1)), looked }, null, 2) + '\n',
+    JSON.stringify(
+      {
+        recorded: new Date().toISOString().slice(0, 10),
+        fps: FPS,
+        width: WIDTH,
+        crop,
+        seconds: Number(seconds.toFixed(1)),
+        bytes: statSync(OUT).size,
+        looked,
+      },
+      null,
+      2,
+    ) + '\n',
   )
 } finally {
   server.stop()

@@ -14,10 +14,13 @@
  *    `docs/capture.json` records what `npm run capture` drove the page to, and
  *    this drives the same clicks and compares. A control that ends somewhere
  *    else fails here rather than in a reader's browser.
- * 2. The GIF exists, is a GIF, and is not larger than it was. The ceiling is
- *    the recorded size plus a tenth rather than a round number, because a fixed
- *    ceiling permits silent growth right up to it, which is an open finding
- *    against `tokenlab` for exactly this reason.
+ * 2. **The GIF is the byte-for-byte size the capture wrote**, held to
+ *    `docs/capture.json` rather than to a round ceiling. A fixed ceiling
+ *    permits silent growth right up to it, which is an open finding against
+ *    `tokenlab`, whose cap is 4 MB over a picture of 2.77 MB. Here any change
+ *    at all appears as a diff in the manifest and has to be committed on
+ *    purpose. The absolute ceiling below is a second, blunter limit for the
+ *    thing the first cannot see: a re-capture that is deliberately enormous.
  * 3. The README points at the file that exists.
  * 4. The alt text says what the picture shows, with the figure in it.
  */
@@ -57,19 +60,32 @@ const head = readFileSync(gifPath).subarray(0, 6).toString('latin1')
 if (!head.startsWith('GIF8')) fail(`docs/grain.gif does not begin with a GIF header, it begins ${JSON.stringify(head)}`)
 else console.log(`  ok      docs/grain.gif is a GIF, ${(bytes / 1e6).toFixed(2)} MB`)
 
+/* The size the capture wrote, to the byte. */
+if (recorded.bytes === undefined) {
+  fail('docs/capture.json records no size', 'Re-run npm run capture. A picture with no recorded size has nothing to be held to.')
+} else if (bytes !== recorded.bytes) {
+  fail(
+    `docs/grain.gif is ${bytes} bytes and the capture wrote ${recorded.bytes}`,
+    `${bytes > recorded.bytes ? 'Grown' : 'Shrunk'} by ${Math.abs(bytes - recorded.bytes)} bytes since the recording.\n` +
+      '      Re-run npm run capture so the manifest and the picture are one act rather than two.',
+  )
+} else {
+  console.log(`  ok      docs/grain.gif is the ${bytes} bytes the capture wrote`)
+}
+
 /*
- * The ratchet. `recordedBytes` is written the first time this runs and only
- * ever lowered by hand, so a picture that grows a megabyte has to be argued for
- * rather than merely committed.
+ * And a blunt absolute limit, set by hand and only ever lowered, for the thing
+ * the byte check cannot see: a re-capture that is deliberately enormous. A
+ * README picture nobody waits for is a README with no picture.
  */
-const CEILING = Math.round(1_350_000 * 1.1)
+const CEILING = 1_500_000
 if (bytes > CEILING) {
   fail(
     `docs/grain.gif is ${(bytes / 1e6).toFixed(2)} MB, over the ${(CEILING / 1e6).toFixed(2)} MB ceiling`,
-    'Re-encode or shorten the choreography. A README picture nobody waits for is a README with no picture.',
+    'Re-encode or shorten the choreography.',
   )
 } else {
-  console.log(`  ok      docs/grain.gif is under its ceiling, ${(bytes / 1e6).toFixed(2)} of ${(CEILING / 1e6).toFixed(2)} MB`)
+  console.log(`  ok      docs/grain.gif is under the ${(CEILING / 1e6).toFixed(2)} MB ceiling at ${(bytes / 1e6).toFixed(2)} MB`)
 }
 
 const readme = readFileSync(resolve(root, 'README.md'), 'utf8').replace(/\r\n/g, '\n')
