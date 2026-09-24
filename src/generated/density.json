@@ -1,0 +1,5348 @@
+{
+  "measured": "2026-09-24",
+  "encoding": "o200k_base",
+  "inputs": {
+    "contract": {
+      "file": "data/contract.md",
+      "sha256": "1ba90de0cc3cd6d4fea6fb11b621ff99f9167071f0ae6b1d9190d8804d8fa2a5"
+    },
+    "pricing": {
+      "file": "data/pricing.json",
+      "sha256": "1715a5c9a95294a6fc80cf8c52f61a169ed6e4f8590e05028915262b63007464",
+      "checked": "2026-09-20",
+      "source": "https://developers.openai.com/api/docs/pricing"
+    }
+  },
+  "cadence": {
+    "minutesPerSend": 30,
+    "sendsPerDay": 48,
+    "days": 30
+  },
+  "scale": {
+    "low": 2.6,
+    "high": 5.2,
+    "clamped": 44
+  },
+  "documents": [
+    {
+      "id": "contract",
+      "title": "The build contract",
+      "note": "The prompt that built this repository, re-read every 30 minutes. Frozen and hashed.",
+      "lines": 294,
+      "chars": 12855,
+      "tokens": 3157,
+      "text": "# The build contract, v3\n\n> Supersedes `LOOP-PROMPT.md` for anything not yet published. `MAINTAIN-PROMPT.md`\n> still governs a project that is public: the moment a repository exists, that\n> file takes over for it and this one stops applying to it.\n\nEvery **30 minutes**. One tick, one task, one entry.\n\nThe instruction this file exists to carry out: build every project in the queue,\nthen optimise and fix them, then audit them on rotation, and publish one every\ntwo days with progress pushes in between.\n\n---\n\n## 0. Who you are this tick\n\nThe code is the portfolio. Every file will be read by somebody deciding whether\nto hire the person who wrote it, so it is written to be read: the comment says\nwhy, not what; the commit message says what was wrong, what changed and what\nproves it; the README leads with the claim and the picture and puts the method\nunderneath for the people who check.\n\nMethodical, not fast. A project that builds and lies is worth less than no\nproject. **Every number on a page is produced by a command in its repository**,\nand where that is impossible the number is pinned with the file it came from and\nthat file's hash.\n\nYou are the only author. Nobody is co-credited and no tool is named in a commit.\n\n---\n\n## 1. Every tick, before anything else\n\n1. `state/state.json`: the queue, the open findings, whose turn it is.\n2. The last 40 lines of `DEVLOG.md`.\n3. `DECISIONS.md` and `RELEASE-PLAN.md`.\n4. **`audits/inbox/`**, for anything the auditor session has filed since the last\n   tick. See section 5.\n5. The live deploy status of every published project, via the Actions API.\n\nTake the time from the shell. Never infer it.\n\n---\n\n## 2. Pick exactly one task\n\nWalk the ladder, stop at the first hit.\n\n1. **A published page is broken, or its last deploy failed.** Nothing below this\n   matters while something people can open is wrong.\n2. **A claim a repository cannot reproduce.** On a page, in a README, in an alt\n   text. Published first, then unpublished.\n3. **An open finding at `severity: high`**, published projects first.\n4. **The release, if one is due today.** See section 4.\n5. **The next project that does not exist yet**, in the order in section 3. Build\n   it until it reaches the standard in section 3.2, then stop and say so.\n6. **An open finding at `severity: medium`**, oldest audit first.\n7. **An audit, on rotation**, once every project in the queue has been built. One\n   perspective, one project, by hand, into `audits/`.\n8. **Nothing.** A one line noop entry. No commit.\n\nOne task. A tick that does one thing completely beats a tick that half does\nthree.\n\n---\n\n## 2b. What a tick has to contain\n\nOne task, done to the bottom. The tick is not the change; the change is the\nsmallest part of it. A tick that edits a file, commits and stops has done the\ntyping and left the work.\n\nEvery tick carries all six of these, and the report says so.\n\n### 1. A measurement before the change\n\n**No fix without a number first.** Reproduce the defect with a command and paste\nwhat it printed. If the defect cannot be reproduced, that is the finding, and\nthe tick becomes proving it is not there.\n\nThis is the difference between the ticks in this devlog that hold up and the\nones that had to be redone. \"The ramp is too dark\" produced an argument; \"peak\nluminance runs 46 to 166 against a background of 6, and 40 against 75 with the\ncurve\" produced a floor with a reason.\n\n### 2. The class, not the instance\n\nBefore committing, **search every project for the same shape** and say what the\nsearch found, including when it finds nothing. A defect that happened once\nhappened because something allowed it, and that something is still there.\n\nWorked, every time it was done: one corrupted escape became a scan that found\nfour files and a gate; one stale queue entry became a sweep that closed nine; one\nnumber in prose became a gate that reads three files. Skipped, it costs a later\ntick: the same two findings were filed twice, two days apart, because the first\npair was fixed as instances.\n\n### 3. A gate whose control fails\n\nEvery fix ships with the gate that would have caught it, and the gate ships with\nthe broken state restored, run, and its failure output pasted.\n\n**If the control passes, the gate is wrong.** It has never once been the gate\nbeing right: the assertion measured a proxy, or its condition could never occur,\nor the build had failed and the page under test was the fixed one, or the claim\nwas a bare number that the document says somewhere else anyway. Suspect a passing\ncontrol before believing it, and when it turns out wrong, the tick's real work is\nthe assertion rather than the fix.\n\nHow often it has happened is a number this file used to state twice, as \"nine\ntimes\" here and \"eight times\" in section 6, adding that every one is in the\ndevlog. Neither was reproducible: `projects/agentscope, npm run build:corpus,` finds the\nentries that record it, one of which says six of that day's controls were wrong\nfirst, so the corpus supports anywhere from four to twelve against a unit nobody\nhad defined. Corrected at tick 104, by the tick whose own control passed against\na broken spec while it was being written. **Run the command rather than quoting a\ncount from here.**\n\n### 4. Something checked and found clean\n\nName one hypothesis the tick tested and killed, with the measurement that killed\nit. A tick that reports only what it changed leaves nobody able to tell what it\nlooked at, and the negative results in this devlog have twice saved a later tick\nfrom a day of work: sharing one browser across the gates is not worth it, the\ncube peak does not include padding.\n\n### 5. The reader\n\nEvery tick asks what a visitor or a recruiter now sees that they did not before,\nand answers it in one line, or says plainly that this tick was invisible to them\nand why that was still the right thing to do. **The code is the portfolio.** A\nweek of invisible ticks is a week that does not show.\n\n### 6. The next task, named\n\nEnd by naming the next tick's task and the reason it is next, so the following\ntick starts from a decision rather than from a reread.\n\n### What makes a tick a noop\n\nNothing on the ladder, or the one thing on it is blocked and the block is named.\nA noop is one line and no commit. **A tick that produced no measurement is a\nnoop that has not admitted it.**\n\n## 3. The projects\n\n### 3.1 The order\n\nFrom D15, unchanged, because the reasoning behind it has not changed: the ones\nbuildable from what already exists go first, and the one needing a measurement\nrun goes late enough that the run can happen on a day it does not block.\n\n| # | project | what it is | reuses |\n|---|---|---|---|\n| 1 | `chunkline` | the same passage chunked in English and Greek, every boundary drawn on the text | `tokenlab`'s tokenizer engine |\n| 2 | `agentscope` | a failure taxonomy of agent runs, each mode with a real replayable run behind it | this workspace's own 95 devlog entries and 27 audits |\n| 3 | `evalkit` | an evaluation runner that refuses to report a number its sample size cannot carry | `bslm`'s benchmark shape |\n| 4 | `gatewaylab` | what providers really do under load, measured, drawn as an instrument | a drill that runs offline first |\n| 5 | `promptcost` | a cost heatmap over a prompt | `tokenlab`'s tokenizers and pricing data |\n| 6 | `retrievalbench` | `chunkline` stage two: in browser embeddings and a leaderboard | `watch-it-think`'s int8 ONNX pipeline |\n\nSpecifications live in `specs/`. `chunkline`'s is written, measured and frozen.\nThe rest are written the tick before that project is started, not before.\n\n### 3.2 When a project is done enough to leave\n\nA project is **in a nice spot**, and the next tick moves on, when all of these\nare true and the tick says so explicitly:\n\n1. `npm run build` passes, and the build runs the project's own gates.\n2. Every number in its README is produced by a command in the repository, or\n   pinned with provenance, and a gate holds it.\n3. It has been **looked at in a real browser at 1280 and at 390**, and the\n   screenshot has been examined rather than merely taken.\n4. The README leads with the claim, then the picture, then the method.\n5. There is at least one gate that would have caught the defect the project most\n   plausibly ships with, and that gate has a control proving it bites.\n\nAnything short of that and the next tick continues the same project. Say which\nof the five is missing.\n\n### 3.3 Nothing enters the queue that cannot be built in a day of ticks\n\nD14's rule, restated because it still binds. A project larger than that is\ndecomposed into stages that each stand alone: its own claim, its own picture, its\nown number, its own gates.\n\n---\n\n## 4. Publishing\n\n**One project published every two days.** Between publications, push progress to\nwhatever is already public so the profile shows work happening: one to three\npushes a day, each one a coherent piece, never an empty commit.\n\nThe release itself is `MAINTAIN-PROMPT.md` section 4 and `RELEASE-PLAN.md`\nsteps 1 to 5, unchanged: the repository is created with its description, topics\nand homepage already written in `docs/PUBLISH.md`, `main` carries the whole\nhistory, Pages goes on, the live URL is verified **in a browser**, and the second\nand last push of that day adds the live link.\n\n**The README is the marketing.** It is written for a recruiter who gives it ten\nseconds, then for an engineer who gives it two minutes, then for a reviewer who\ngives it half an hour, in that order and in that layout. The claim, the moving\npicture, the one number that matters, then the method.\n\n---\n\n## 5. The auditor session\n\nA second session, `broikos-github-ai-projects-auditor`, audits what this one\nbuilds. It is a separate pair of eyes on purpose: this session is too close to\nthe code it just wrote to see it, and every audit in this workspace has proved\nthat.\n\n**The division, and it does not bend:**\n\n- The auditor **reads, measures, drives a browser, and writes findings**. It\n  never edits a project, never commits, never pushes.\n- This session **fixes**, and every fix ships with the gate that would have\n  caught it plus a control proving that gate bites.\n\n**How a finding arrives.** The auditor writes one file per pass into\n`audits/inbox/<project>-<date>-<perspective>.md`, in the format of\n`audits/AUDIT-BRIEF.md`, and messages this session with the verdict line and the\ncount by severity. This session reads the inbox at the top of every tick, folds\nthe findings into `state/state.json` as tasks, and moves the file to `audits/`.\n\n**Disagreement is settled by measurement.** If a finding is wrong, it is answered\nwith the command that shows it is wrong, in the devlog, and the auditor is told.\nFive entries in the queue turned out stale on 23 September because nobody\nchecked; the fix for that is checking, not arguing.\n\n---\n\n## 6. Verification, unchanged\n\n- Run the gates. Paste the real output.\n- Anything visual: look at it in a browser, at 1280 and at 390.\n- A bug fix: reproduce the failure first with the exact input, then fix, then\n  re-run that same input.\n- Every fix ships with the gate that would have caught it, and that gate ships\n  with a negative control proving it bites.\n- **A control that passes against the broken code is worse than no control.** The\n  entries that record it are what `projects/agentscope, npm run build:corpus,` counts, and\n  section 2b says why the count is not written here. If a control passes, suspect\n  it before believing it.\n\nIf a gate fails, the tick becomes the gate.\n\n---\n\n## 7. Write back, always\n\n1. `DEVLOG.md`: one entry per tick. Shell timestamp, tick number, the task, what\n   changed, the output that proves it, and which of section 3.2's five\n   conditions the project still fails.\n2. `state/state.json`: findings closed with the tick that closed them, `tick`\n   incremented, `updated` set.\n3. `DECISIONS.md`: only if a fork was taken.\n\n---\n\n## 8. Never\n\n- Never co-author a commit.\n- Never write a number into prose that no command produces.\n- Never leave the working tree dirty at the end of a tick.\n- Never use dashes as punctuation, and never emojis, in any file or message.\n- Never force push `main`.\n- Never let the auditor edit a project, and never fix a finding without reading\n  the finding.\n\n---\n\n## 9. The tick report\n\nSix lines maximum.\n\n```\ntick N | project | ladder item and task\nwhat it measured first, with the number\nwhat changed, and what the sweep for the same shape found\nthe control's failure output\nwhat was checked and found clean\nwhat a reader sees now, or why this tick was invisible to them\nwhich of the five it still fails, or none\nnext tick, and why it is next\n```\n\nSix lines maximum, so this is what to compress **into** six lines, not a list to\nprint. If a tick cannot fill it, the tick was thin and the report should say\nwhich part is missing rather than leaving the line out.\n",
+      "grains": {
+        "section": {
+          "regions": [
+            {
+              "from": 0,
+              "to": 13,
+              "chars": 510,
+              "tokens": 123,
+              "charsPerToken": 4.15,
+              "label": "The build contract, v3"
+            },
+            {
+              "from": 14,
+              "to": 30,
+              "chars": 723,
+              "tokens": 169,
+              "charsPerToken": 4.28,
+              "label": "0. Who you are this tick"
+            },
+            {
+              "from": 31,
+              "to": 43,
+              "chars": 422,
+              "tokens": 117,
+              "charsPerToken": 3.61,
+              "label": "1. Every tick, before anything else"
+            },
+            {
+              "from": 44,
+              "to": 65,
+              "chars": 951,
+              "tokens": 246,
+              "charsPerToken": 3.87,
+              "label": "2. Pick exactly one task"
+            },
+            {
+              "from": 66,
+              "to": 143,
+              "chars": 3716,
+              "tokens": 875,
+              "charsPerToken": 4.25,
+              "label": "2b. What a tick has to contain"
+            },
+            {
+              "from": 144,
+              "to": 188,
+              "chars": 2346,
+              "tokens": 595,
+              "charsPerToken": 3.94,
+              "label": "3. The projects"
+            },
+            {
+              "from": 189,
+              "to": 207,
+              "chars": 900,
+              "tokens": 216,
+              "charsPerToken": 4.17,
+              "label": "4. Publishing"
+            },
+            {
+              "from": 208,
+              "to": 234,
+              "chars": 1242,
+              "tokens": 306,
+              "charsPerToken": 4.06,
+              "label": "5. The auditor session"
+            },
+            {
+              "from": 235,
+              "to": 251,
+              "chars": 693,
+              "tokens": 174,
+              "charsPerToken": 3.98,
+              "label": "6. Verification, unchanged"
+            },
+            {
+              "from": 252,
+              "to": 262,
+              "chars": 376,
+              "tokens": 103,
+              "charsPerToken": 3.65,
+              "label": "7. Write back, always"
+            },
+            {
+              "from": 263,
+              "to": 274,
+              "chars": 364,
+              "tokens": 86,
+              "charsPerToken": 4.23,
+              "label": "8. Never"
+            },
+            {
+              "from": 275,
+              "to": 293,
+              "chars": 601,
+              "tokens": 147,
+              "charsPerToken": 4.09,
+              "label": "9. The tick report"
+            }
+          ],
+          "spread": {
+            "regions": 12,
+            "low": 3.61,
+            "p5": 3.61,
+            "p25": 3.87,
+            "median": 4.06,
+            "p75": 4.17,
+            "p95": 4.25,
+            "high": 4.28,
+            "band": 1.18,
+            "fullRange": 1.19,
+            "outside": 1
+          }
+        },
+        "paragraph": {
+          "regions": [
+            {
+              "from": 0,
+              "to": 0,
+              "chars": 24,
+              "tokens": 7,
+              "charsPerToken": 3.43,
+              "label": "The build contract, v3"
+            },
+            {
+              "from": 2,
+              "to": 4,
+              "chars": 221,
+              "tokens": 58,
+              "charsPerToken": 3.81,
+              "label": "> Supersedes `LOOP-PROMPT.md` for anything not yet published. `M"
+            },
+            {
+              "from": 6,
+              "to": 6,
+              "chars": 52,
+              "tokens": 15,
+              "charsPerToken": 3.47,
+              "label": "Every **30 minutes**. One tick, one task, one entry."
+            },
+            {
+              "from": 8,
+              "to": 10,
+              "chars": 201,
+              "tokens": 41,
+              "charsPerToken": 4.9,
+              "label": "The instruction this file exists to carry out: build every proje"
+            },
+            {
+              "from": 12,
+              "to": 12,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 14,
+              "to": 14,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "0. Who you are this tick"
+            },
+            {
+              "from": 16,
+              "to": 20,
+              "chars": 351,
+              "tokens": 80,
+              "charsPerToken": 4.39,
+              "label": "The code is the portfolio. Every file will be read by somebody d"
+            },
+            {
+              "from": 22,
+              "to": 25,
+              "chars": 253,
+              "tokens": 58,
+              "charsPerToken": 4.36,
+              "label": "Methodical, not fast. A project that builds and lies is worth le"
+            },
+            {
+              "from": 27,
+              "to": 27,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "You are the only author. Nobody is co-credited and no tool is na"
+            },
+            {
+              "from": 29,
+              "to": 29,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 31,
+              "to": 31,
+              "chars": 38,
+              "tokens": 10,
+              "charsPerToken": 3.8,
+              "label": "1. Every tick, before anything else"
+            },
+            {
+              "from": 33,
+              "to": 38,
+              "chars": 329,
+              "tokens": 94,
+              "charsPerToken": 3.5,
+              "label": "1. `state/state.json`: the queue, the open findings, whose turn "
+            },
+            {
+              "from": 40,
+              "to": 40,
+              "chars": 45,
+              "tokens": 11,
+              "charsPerToken": 4.09,
+              "label": "Take the time from the shell. Never infer it."
+            },
+            {
+              "from": 42,
+              "to": 42,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 44,
+              "to": 44,
+              "chars": 27,
+              "tokens": 8,
+              "charsPerToken": 3.38,
+              "label": "2. Pick exactly one task"
+            },
+            {
+              "from": 46,
+              "to": 46,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "Walk the ladder, stop at the first hit."
+            },
+            {
+              "from": 48,
+              "to": 59,
+              "chars": 791,
+              "tokens": 207,
+              "charsPerToken": 3.82,
+              "label": "1. **A published page is broken, or its last deploy failed.** No"
+            },
+            {
+              "from": 61,
+              "to": 62,
+              "chars": 82,
+              "tokens": 19,
+              "charsPerToken": 4.32,
+              "label": "One task. A tick that does one thing completely beats a tick tha"
+            },
+            {
+              "from": 64,
+              "to": 64,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 66,
+              "to": 66,
+              "chars": 33,
+              "tokens": 11,
+              "charsPerToken": 3,
+              "label": "2b. What a tick has to contain"
+            },
+            {
+              "from": 68,
+              "to": 70,
+              "chars": 179,
+              "tokens": 46,
+              "charsPerToken": 3.89,
+              "label": "One task, done to the bottom. The tick is not the change; the ch"
+            },
+            {
+              "from": 72,
+              "to": 72,
+              "chars": 60,
+              "tokens": 14,
+              "charsPerToken": 4.29,
+              "label": "Every tick carries all six of these, and the report says so."
+            },
+            {
+              "from": 74,
+              "to": 74,
+              "chars": 38,
+              "tokens": 9,
+              "charsPerToken": 4.22,
+              "label": "1. A measurement before the change"
+            },
+            {
+              "from": 76,
+              "to": 78,
+              "chars": 200,
+              "tokens": 46,
+              "charsPerToken": 4.35,
+              "label": "**No fix without a number first.** Reproduce the defect with a c"
+            },
+            {
+              "from": 80,
+              "to": 83,
+              "chars": 273,
+              "tokens": 73,
+              "charsPerToken": 3.74,
+              "label": "This is the difference between the ticks in this devlog that hol"
+            },
+            {
+              "from": 85,
+              "to": 85,
+              "chars": 34,
+              "tokens": 10,
+              "charsPerToken": 3.4,
+              "label": "2. The class, not the instance"
+            },
+            {
+              "from": 87,
+              "to": 89,
+              "chars": 228,
+              "tokens": 47,
+              "charsPerToken": 4.85,
+              "label": "Before committing, **search every project for the same shape** a"
+            },
+            {
+              "from": 91,
+              "to": 95,
+              "chars": 348,
+              "tokens": 79,
+              "charsPerToken": 4.41,
+              "label": "Worked, every time it was done: one corrupted escape became a sc"
+            },
+            {
+              "from": 97,
+              "to": 97,
+              "chars": 33,
+              "tokens": 9,
+              "charsPerToken": 3.67,
+              "label": "3. A gate whose control fails"
+            },
+            {
+              "from": 99,
+              "to": 100,
+              "chars": 143,
+              "tokens": 31,
+              "charsPerToken": 4.61,
+              "label": "Every fix ships with the gate that would have caught it, and the"
+            },
+            {
+              "from": 102,
+              "to": 107,
+              "chars": 437,
+              "tokens": 98,
+              "charsPerToken": 4.46,
+              "label": "**If the control passes, the gate is wrong.** It has never once "
+            },
+            {
+              "from": 109,
+              "to": 116,
+              "chars": 585,
+              "tokens": 140,
+              "charsPerToken": 4.18,
+              "label": "How often it has happened is a number this file used to state tw"
+            },
+            {
+              "from": 118,
+              "to": 118,
+              "chars": 40,
+              "tokens": 9,
+              "charsPerToken": 4.44,
+              "label": "4. Something checked and found clean"
+            },
+            {
+              "from": 120,
+              "to": 124,
+              "chars": 355,
+              "tokens": 78,
+              "charsPerToken": 4.55,
+              "label": "Name one hypothesis the tick tested and killed, with the measure"
+            },
+            {
+              "from": 126,
+              "to": 126,
+              "chars": 17,
+              "tokens": 6,
+              "charsPerToken": 2.83,
+              "label": "5. The reader"
+            },
+            {
+              "from": 128,
+              "to": 131,
+              "chars": 294,
+              "tokens": 68,
+              "charsPerToken": 4.32,
+              "label": "Every tick asks what a visitor or a recruiter now sees that they"
+            },
+            {
+              "from": 133,
+              "to": 133,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "6. The next task, named"
+            },
+            {
+              "from": 135,
+              "to": 136,
+              "chars": 133,
+              "tokens": 31,
+              "charsPerToken": 4.29,
+              "label": "End by naming the next tick's task and the reason it is next, so"
+            },
+            {
+              "from": 138,
+              "to": 138,
+              "chars": 28,
+              "tokens": 7,
+              "charsPerToken": 4,
+              "label": "What makes a tick a noop"
+            },
+            {
+              "from": 140,
+              "to": 142,
+              "chars": 190,
+              "tokens": 46,
+              "charsPerToken": 4.13,
+              "label": "Nothing on the ladder, or the one thing on it is blocked and the"
+            },
+            {
+              "from": 144,
+              "to": 144,
+              "chars": 18,
+              "tokens": 6,
+              "charsPerToken": 3,
+              "label": "3. The projects"
+            },
+            {
+              "from": 146,
+              "to": 146,
+              "chars": 17,
+              "tokens": 7,
+              "charsPerToken": 2.43,
+              "label": "3.1 The order"
+            },
+            {
+              "from": 148,
+              "to": 150,
+              "chars": 230,
+              "tokens": 51,
+              "charsPerToken": 4.51,
+              "label": "From D15, unchanged, because the reasoning behind it has not cha"
+            },
+            {
+              "from": 152,
+              "to": 159,
+              "chars": 829,
+              "tokens": 228,
+              "charsPerToken": 3.64,
+              "label": "| # | project | what it is | reuses |"
+            },
+            {
+              "from": 161,
+              "to": 162,
+              "chars": 153,
+              "tokens": 36,
+              "charsPerToken": 4.25,
+              "label": "Specifications live in `specs/`. `chunkline`'s is written, measu"
+            },
+            {
+              "from": 164,
+              "to": 164,
+              "chars": 46,
+              "tokens": 13,
+              "charsPerToken": 3.54,
+              "label": "3.2 When a project is done enough to leave"
+            },
+            {
+              "from": 166,
+              "to": 167,
+              "chars": 120,
+              "tokens": 30,
+              "charsPerToken": 4,
+              "label": "A project is **in a nice spot**, and the next tick moves on, whe"
+            },
+            {
+              "from": 169,
+              "to": 176,
+              "chars": 551,
+              "tokens": 133,
+              "charsPerToken": 4.14,
+              "label": "1. `npm run build` passes, and the build runs the project's own "
+            },
+            {
+              "from": 178,
+              "to": 179,
+              "chars": 102,
+              "tokens": 22,
+              "charsPerToken": 4.64,
+              "label": "Anything short of that and the next tick continues the same proj"
+            },
+            {
+              "from": 181,
+              "to": 181,
+              "chars": 71,
+              "tokens": 18,
+              "charsPerToken": 3.94,
+              "label": "3.3 Nothing enters the queue that cannot be built in a day of ti"
+            },
+            {
+              "from": 183,
+              "to": 185,
+              "chars": 183,
+              "tokens": 46,
+              "charsPerToken": 3.98,
+              "label": "D14's rule, restated because it still binds. A project larger th"
+            },
+            {
+              "from": 187,
+              "to": 187,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 189,
+              "to": 189,
+              "chars": 16,
+              "tokens": 5,
+              "charsPerToken": 3.2,
+              "label": "4. Publishing"
+            },
+            {
+              "from": 191,
+              "to": 193,
+              "chars": 221,
+              "tokens": 47,
+              "charsPerToken": 4.7,
+              "label": "**One project published every two days.** Between publications, "
+            },
+            {
+              "from": 195,
+              "to": 199,
+              "chars": 358,
+              "tokens": 92,
+              "charsPerToken": 3.89,
+              "label": "The release itself is `MAINTAIN-PROMPT.md` section 4 and `RELEAS"
+            },
+            {
+              "from": 201,
+              "to": 204,
+              "chars": 293,
+              "tokens": 70,
+              "charsPerToken": 4.19,
+              "label": "**The README is the marketing.** It is written for a recruiter w"
+            },
+            {
+              "from": 206,
+              "to": 206,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 208,
+              "to": 208,
+              "chars": 25,
+              "tokens": 7,
+              "charsPerToken": 3.57,
+              "label": "5. The auditor session"
+            },
+            {
+              "from": 210,
+              "to": 213,
+              "chars": 240,
+              "tokens": 61,
+              "charsPerToken": 3.93,
+              "label": "A second session, `broikos-github-ai-projects-auditor`, audits w"
+            },
+            {
+              "from": 215,
+              "to": 215,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "**The division, and it does not bend:**"
+            },
+            {
+              "from": 217,
+              "to": 220,
+              "chars": 258,
+              "tokens": 60,
+              "charsPerToken": 4.3,
+              "label": "- The auditor **reads, measures, drives a browser, and writes fi"
+            },
+            {
+              "from": 222,
+              "to": 226,
+              "chars": 376,
+              "tokens": 99,
+              "charsPerToken": 3.8,
+              "label": "**How a finding arrives.** The auditor writes one file per pass "
+            },
+            {
+              "from": 228,
+              "to": 231,
+              "chars": 288,
+              "tokens": 66,
+              "charsPerToken": 4.36,
+              "label": "**Disagreement is settled by measurement.** If a finding is wron"
+            },
+            {
+              "from": 233,
+              "to": 233,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 235,
+              "to": 235,
+              "chars": 29,
+              "tokens": 7,
+              "charsPerToken": 4.14,
+              "label": "6. Verification, unchanged"
+            },
+            {
+              "from": 237,
+              "to": 246,
+              "chars": 611,
+              "tokens": 154,
+              "charsPerToken": 3.97,
+              "label": "- Run the gates. Paste the real output."
+            },
+            {
+              "from": 248,
+              "to": 248,
+              "chars": 43,
+              "tokens": 11,
+              "charsPerToken": 3.91,
+              "label": "If a gate fails, the tick becomes the gate."
+            },
+            {
+              "from": 250,
+              "to": 250,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 252,
+              "to": 252,
+              "chars": 24,
+              "tokens": 8,
+              "charsPerToken": 3,
+              "label": "7. Write back, always"
+            },
+            {
+              "from": 254,
+              "to": 259,
+              "chars": 344,
+              "tokens": 93,
+              "charsPerToken": 3.7,
+              "label": "1. `DEVLOG.md`: one entry per tick. Shell timestamp, tick number"
+            },
+            {
+              "from": 261,
+              "to": 261,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 263,
+              "to": 263,
+              "chars": 11,
+              "tokens": 5,
+              "charsPerToken": 2.2,
+              "label": "8. Never"
+            },
+            {
+              "from": 265,
+              "to": 271,
+              "chars": 345,
+              "tokens": 79,
+              "charsPerToken": 4.37,
+              "label": "- Never co-author a commit."
+            },
+            {
+              "from": 273,
+              "to": 273,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 275,
+              "to": 275,
+              "chars": 21,
+              "tokens": 7,
+              "charsPerToken": 3,
+              "label": "9. The tick report"
+            },
+            {
+              "from": 277,
+              "to": 277,
+              "chars": 18,
+              "tokens": 4,
+              "charsPerToken": 4.5,
+              "label": "Six lines maximum."
+            },
+            {
+              "from": 279,
+              "to": 288,
+              "chars": 342,
+              "tokens": 83,
+              "charsPerToken": 4.12,
+              "label": "```"
+            },
+            {
+              "from": 290,
+              "to": 292,
+              "chars": 213,
+              "tokens": 51,
+              "charsPerToken": 4.18,
+              "label": "Six lines maximum, so this is what to compress **into** six line"
+            }
+          ],
+          "spread": {
+            "regions": 78,
+            "low": 2.2,
+            "p5": 3,
+            "p25": 3.2,
+            "median": 3.9,
+            "p75": 4.29,
+            "p95": 4.61,
+            "high": 4.9,
+            "band": 1.54,
+            "fullRange": 2.23,
+            "outside": 7
+          }
+        },
+        "line": {
+          "regions": [
+            {
+              "from": 0,
+              "to": 0,
+              "chars": 24,
+              "tokens": 7,
+              "charsPerToken": 3.43,
+              "label": "The build contract, v3"
+            },
+            {
+              "from": 2,
+              "to": 2,
+              "chars": 82,
+              "tokens": 27,
+              "charsPerToken": 3.04,
+              "label": "> Supersedes `LOOP-PROMPT.md` for anything not yet published. `M"
+            },
+            {
+              "from": 3,
+              "to": 3,
+              "chars": 78,
+              "tokens": 16,
+              "charsPerToken": 4.88,
+              "label": "> still governs a project that is public: the moment a repositor"
+            },
+            {
+              "from": 4,
+              "to": 4,
+              "chars": 59,
+              "tokens": 14,
+              "charsPerToken": 4.21,
+              "label": "> file takes over for it and this one stops applying to it."
+            },
+            {
+              "from": 6,
+              "to": 6,
+              "chars": 52,
+              "tokens": 15,
+              "charsPerToken": 3.47,
+              "label": "Every **30 minutes**. One tick, one task, one entry."
+            },
+            {
+              "from": 8,
+              "to": 8,
+              "chars": 80,
+              "tokens": 16,
+              "charsPerToken": 5,
+              "label": "The instruction this file exists to carry out: build every proje"
+            },
+            {
+              "from": 9,
+              "to": 9,
+              "chars": 78,
+              "tokens": 16,
+              "charsPerToken": 4.88,
+              "label": "then optimise and fix them, then audit them on rotation, and pub"
+            },
+            {
+              "from": 10,
+              "to": 10,
+              "chars": 41,
+              "tokens": 8,
+              "charsPerToken": 5.13,
+              "label": "two days with progress pushes in between."
+            },
+            {
+              "from": 12,
+              "to": 12,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 14,
+              "to": 14,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "0. Who you are this tick"
+            },
+            {
+              "from": 16,
+              "to": 16,
+              "chars": 79,
+              "tokens": 15,
+              "charsPerToken": 5.27,
+              "label": "The code is the portfolio. Every file will be read by somebody d"
+            },
+            {
+              "from": 17,
+              "to": 17,
+              "chars": 78,
+              "tokens": 19,
+              "charsPerToken": 4.11,
+              "label": "to hire the person who wrote it, so it is written to be read: th"
+            },
+            {
+              "from": 18,
+              "to": 18,
+              "chars": 76,
+              "tokens": 17,
+              "charsPerToken": 4.47,
+              "label": "why, not what; the commit message says what was wrong, what chan"
+            },
+            {
+              "from": 19,
+              "to": 19,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "proves it; the README leads with the claim and the picture and p"
+            },
+            {
+              "from": 20,
+              "to": 20,
+              "chars": 36,
+              "tokens": 8,
+              "charsPerToken": 4.5,
+              "label": "underneath for the people who check."
+            },
+            {
+              "from": 22,
+              "to": 22,
+              "chars": 74,
+              "tokens": 17,
+              "charsPerToken": 4.35,
+              "label": "Methodical, not fast. A project that builds and lies is worth le"
+            },
+            {
+              "from": 23,
+              "to": 23,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "project. **Every number on a page is produced by a command in it"
+            },
+            {
+              "from": 24,
+              "to": 24,
+              "chars": 80,
+              "tokens": 16,
+              "charsPerToken": 5,
+              "label": "and where that is impossible the number is pinned with the file "
+            },
+            {
+              "from": 25,
+              "to": 25,
+              "chars": 17,
+              "tokens": 5,
+              "charsPerToken": 3.4,
+              "label": "that file's hash."
+            },
+            {
+              "from": 27,
+              "to": 27,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "You are the only author. Nobody is co-credited and no tool is na"
+            },
+            {
+              "from": 29,
+              "to": 29,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 31,
+              "to": 31,
+              "chars": 38,
+              "tokens": 10,
+              "charsPerToken": 3.8,
+              "label": "1. Every tick, before anything else"
+            },
+            {
+              "from": 33,
+              "to": 33,
+              "chars": 70,
+              "tokens": 19,
+              "charsPerToken": 3.68,
+              "label": "1. `state/state.json`: the queue, the open findings, whose turn "
+            },
+            {
+              "from": 34,
+              "to": 34,
+              "chars": 36,
+              "tokens": 13,
+              "charsPerToken": 2.77,
+              "label": "2. The last 40 lines of `DEVLOG.md`."
+            },
+            {
+              "from": 35,
+              "to": 35,
+              "chars": 40,
+              "tokens": 16,
+              "charsPerToken": 2.5,
+              "label": "3. `DECISIONS.md` and `RELEASE-PLAN.md`."
+            },
+            {
+              "from": 36,
+              "to": 36,
+              "chars": 81,
+              "tokens": 21,
+              "charsPerToken": 3.86,
+              "label": "4. **`audits/inbox/`**, for anything the auditor session has fil"
+            },
+            {
+              "from": 37,
+              "to": 37,
+              "chars": 23,
+              "tokens": 8,
+              "charsPerToken": 2.88,
+              "label": "tick. See section 5."
+            },
+            {
+              "from": 38,
+              "to": 38,
+              "chars": 74,
+              "tokens": 16,
+              "charsPerToken": 4.63,
+              "label": "5. The live deploy status of every published project, via the Ac"
+            },
+            {
+              "from": 40,
+              "to": 40,
+              "chars": 45,
+              "tokens": 11,
+              "charsPerToken": 4.09,
+              "label": "Take the time from the shell. Never infer it."
+            },
+            {
+              "from": 42,
+              "to": 42,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 44,
+              "to": 44,
+              "chars": 27,
+              "tokens": 8,
+              "charsPerToken": 3.38,
+              "label": "2. Pick exactly one task"
+            },
+            {
+              "from": 46,
+              "to": 46,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "Walk the ladder, stop at the first hit."
+            },
+            {
+              "from": 48,
+              "to": 48,
+              "chars": 80,
+              "tokens": 19,
+              "charsPerToken": 4.21,
+              "label": "1. **A published page is broken, or its last deploy failed.** No"
+            },
+            {
+              "from": 49,
+              "to": 49,
+              "chars": 52,
+              "tokens": 10,
+              "charsPerToken": 5.2,
+              "label": "matters while something people can open is wrong."
+            },
+            {
+              "from": 50,
+              "to": 50,
+              "chars": 79,
+              "tokens": 22,
+              "charsPerToken": 3.59,
+              "label": "2. **A claim a repository cannot reproduce.** On a page, in a RE"
+            },
+            {
+              "from": 51,
+              "to": 51,
+              "chars": 43,
+              "tokens": 9,
+              "charsPerToken": 4.78,
+              "label": "text. Published first, then unpublished."
+            },
+            {
+              "from": 52,
+              "to": 52,
+              "chars": 69,
+              "tokens": 17,
+              "charsPerToken": 4.06,
+              "label": "3. **An open finding at `severity: high`**, published projects f"
+            },
+            {
+              "from": 53,
+              "to": 53,
+              "chars": 55,
+              "tokens": 18,
+              "charsPerToken": 3.06,
+              "label": "4. **The release, if one is due today.** See section 4."
+            },
+            {
+              "from": 54,
+              "to": 54,
+              "chars": 81,
+              "tokens": 21,
+              "charsPerToken": 3.86,
+              "label": "5. **The next project that does not exist yet**, in the order in"
+            },
+            {
+              "from": 55,
+              "to": 55,
+              "chars": 73,
+              "tokens": 20,
+              "charsPerToken": 3.65,
+              "label": "it until it reaches the standard in section 3.2, then stop and s"
+            },
+            {
+              "from": 56,
+              "to": 56,
+              "chars": 65,
+              "tokens": 17,
+              "charsPerToken": 3.82,
+              "label": "6. **An open finding at `severity: medium`**, oldest audit first"
+            },
+            {
+              "from": 57,
+              "to": 57,
+              "chars": 81,
+              "tokens": 20,
+              "charsPerToken": 4.05,
+              "label": "7. **An audit, on rotation**, once every project in the queue ha"
+            },
+            {
+              "from": 58,
+              "to": 58,
+              "chars": 53,
+              "tokens": 15,
+              "charsPerToken": 3.53,
+              "label": "perspective, one project, by hand, into `audits/`."
+            },
+            {
+              "from": 59,
+              "to": 59,
+              "chars": 49,
+              "tokens": 15,
+              "charsPerToken": 3.27,
+              "label": "8. **Nothing.** A one line noop entry. No commit."
+            },
+            {
+              "from": 61,
+              "to": 61,
+              "chars": 75,
+              "tokens": 16,
+              "charsPerToken": 4.69,
+              "label": "One task. A tick that does one thing completely beats a tick tha"
+            },
+            {
+              "from": 62,
+              "to": 62,
+              "chars": 6,
+              "tokens": 2,
+              "charsPerToken": 3,
+              "label": "three."
+            },
+            {
+              "from": 64,
+              "to": 64,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 66,
+              "to": 66,
+              "chars": 33,
+              "tokens": 11,
+              "charsPerToken": 3,
+              "label": "2b. What a tick has to contain"
+            },
+            {
+              "from": 68,
+              "to": 68,
+              "chars": 75,
+              "tokens": 19,
+              "charsPerToken": 3.95,
+              "label": "One task, done to the bottom. The tick is not the change; the ch"
+            },
+            {
+              "from": 69,
+              "to": 69,
+              "chars": 77,
+              "tokens": 19,
+              "charsPerToken": 4.05,
+              "label": "smallest part of it. A tick that edits a file, commits and stops"
+            },
+            {
+              "from": 70,
+              "to": 70,
+              "chars": 25,
+              "tokens": 6,
+              "charsPerToken": 4.17,
+              "label": "typing and left the work."
+            },
+            {
+              "from": 72,
+              "to": 72,
+              "chars": 60,
+              "tokens": 14,
+              "charsPerToken": 4.29,
+              "label": "Every tick carries all six of these, and the report says so."
+            },
+            {
+              "from": 74,
+              "to": 74,
+              "chars": 38,
+              "tokens": 9,
+              "charsPerToken": 4.22,
+              "label": "1. A measurement before the change"
+            },
+            {
+              "from": 76,
+              "to": 76,
+              "chars": 80,
+              "tokens": 18,
+              "charsPerToken": 4.44,
+              "label": "**No fix without a number first.** Reproduce the defect with a c"
+            },
+            {
+              "from": 77,
+              "to": 77,
+              "chars": 77,
+              "tokens": 17,
+              "charsPerToken": 4.53,
+              "label": "what it printed. If the defect cannot be reproduced, that is the"
+            },
+            {
+              "from": 78,
+              "to": 78,
+              "chars": 41,
+              "tokens": 9,
+              "charsPerToken": 4.56,
+              "label": "the tick becomes proving it is not there."
+            },
+            {
+              "from": 80,
+              "to": 80,
+              "chars": 76,
+              "tokens": 16,
+              "charsPerToken": 4.75,
+              "label": "This is the difference between the ticks in this devlog that hol"
+            },
+            {
+              "from": 81,
+              "to": 81,
+              "chars": 78,
+              "tokens": 21,
+              "charsPerToken": 3.71,
+              "label": "ones that had to be redone. \"The ramp is too dark\" produced an a"
+            },
+            {
+              "from": 82,
+              "to": 82,
+              "chars": 78,
+              "tokens": 24,
+              "charsPerToken": 3.25,
+              "label": "luminance runs 46 to 166 against a background of 6, and 40 again"
+            },
+            {
+              "from": 83,
+              "to": 83,
+              "chars": 38,
+              "tokens": 9,
+              "charsPerToken": 4.22,
+              "label": "curve\" produced a floor with a reason."
+            },
+            {
+              "from": 85,
+              "to": 85,
+              "chars": 34,
+              "tokens": 10,
+              "charsPerToken": 3.4,
+              "label": "2. The class, not the instance"
+            },
+            {
+              "from": 87,
+              "to": 87,
+              "chars": 79,
+              "tokens": 16,
+              "charsPerToken": 4.94,
+              "label": "Before committing, **search every project for the same shape** a"
+            },
+            {
+              "from": 88,
+              "to": 88,
+              "chars": 74,
+              "tokens": 14,
+              "charsPerToken": 5.29,
+              "label": "search found, including when it finds nothing. A defect that hap"
+            },
+            {
+              "from": 89,
+              "to": 89,
+              "chars": 73,
+              "tokens": 15,
+              "charsPerToken": 4.87,
+              "label": "happened because something allowed it, and that something is sti"
+            },
+            {
+              "from": 91,
+              "to": 91,
+              "chars": 77,
+              "tokens": 16,
+              "charsPerToken": 4.81,
+              "label": "Worked, every time it was done: one corrupted escape became a sc"
+            },
+            {
+              "from": 92,
+              "to": 92,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "four files and a gate; one stale queue entry became a sweep that"
+            },
+            {
+              "from": 93,
+              "to": 93,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "number in prose became a gate that reads three files. Skipped, i"
+            },
+            {
+              "from": 94,
+              "to": 94,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "tick: the same two findings were filed twice, two days apart, be"
+            },
+            {
+              "from": 95,
+              "to": 95,
+              "chars": 28,
+              "tokens": 6,
+              "charsPerToken": 4.67,
+              "label": "pair was fixed as instances."
+            },
+            {
+              "from": 97,
+              "to": 97,
+              "chars": 33,
+              "tokens": 9,
+              "charsPerToken": 3.67,
+              "label": "3. A gate whose control fails"
+            },
+            {
+              "from": 99,
+              "to": 99,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "Every fix ships with the gate that would have caught it, and the"
+            },
+            {
+              "from": 100,
+              "to": 100,
+              "chars": 62,
+              "tokens": 13,
+              "charsPerToken": 4.77,
+              "label": "the broken state restored, run, and its failure output pasted."
+            },
+            {
+              "from": 102,
+              "to": 102,
+              "chars": 77,
+              "tokens": 19,
+              "charsPerToken": 4.05,
+              "label": "**If the control passes, the gate is wrong.** It has never once "
+            },
+            {
+              "from": 103,
+              "to": 103,
+              "chars": 80,
+              "tokens": 16,
+              "charsPerToken": 5,
+              "label": "being right: the assertion measured a proxy, or its condition co"
+            },
+            {
+              "from": 104,
+              "to": 104,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "or the build had failed and the page under test was the fixed on"
+            },
+            {
+              "from": 105,
+              "to": 105,
+              "chars": 81,
+              "tokens": 16,
+              "charsPerToken": 5.06,
+              "label": "was a bare number that the document says somewhere else anyway. "
+            },
+            {
+              "from": 106,
+              "to": 106,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "control before believing it, and when it turns out wrong, the ti"
+            },
+            {
+              "from": 107,
+              "to": 107,
+              "chars": 34,
+              "tokens": 7,
+              "charsPerToken": 4.86,
+              "label": "the assertion rather than the fix."
+            },
+            {
+              "from": 109,
+              "to": 109,
+              "chars": 77,
+              "tokens": 18,
+              "charsPerToken": 4.28,
+              "label": "How often it has happened is a number this file used to state tw"
+            },
+            {
+              "from": 110,
+              "to": 110,
+              "chars": 75,
+              "tokens": 20,
+              "charsPerToken": 3.75,
+              "label": "times\" here and \"eight times\" in section 6, adding that every on"
+            },
+            {
+              "from": 111,
+              "to": 111,
+              "chars": 88,
+              "tokens": 24,
+              "charsPerToken": 3.67,
+              "label": "devlog. Neither was reproducible: `projects/agentscope, npm run "
+            },
+            {
+              "from": 112,
+              "to": 112,
+              "chars": 79,
+              "tokens": 16,
+              "charsPerToken": 4.94,
+              "label": "entries that record it, one of which says six of that day's cont"
+            },
+            {
+              "from": 113,
+              "to": 113,
+              "chars": 80,
+              "tokens": 15,
+              "charsPerToken": 5.33,
+              "label": "first, so the corpus supports anywhere from four to twelve again"
+            },
+            {
+              "from": 114,
+              "to": 114,
+              "chars": 80,
+              "tokens": 18,
+              "charsPerToken": 4.44,
+              "label": "had defined. Corrected at tick 104, by the tick whose own contro"
+            },
+            {
+              "from": 115,
+              "to": 115,
+              "chars": 81,
+              "tokens": 17,
+              "charsPerToken": 4.76,
+              "label": "a broken spec while it was being written. **Run the command rath"
+            },
+            {
+              "from": 116,
+              "to": 116,
+              "chars": 18,
+              "tokens": 5,
+              "charsPerToken": 3.6,
+              "label": "count from here.**"
+            },
+            {
+              "from": 118,
+              "to": 118,
+              "chars": 40,
+              "tokens": 9,
+              "charsPerToken": 4.44,
+              "label": "4. Something checked and found clean"
+            },
+            {
+              "from": 120,
+              "to": 120,
+              "chars": 80,
+              "tokens": 14,
+              "charsPerToken": 5.71,
+              "label": "Name one hypothesis the tick tested and killed, with the measure"
+            },
+            {
+              "from": 121,
+              "to": 121,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "it. A tick that reports only what it changed leaves nobody able "
+            },
+            {
+              "from": 122,
+              "to": 122,
+              "chars": 80,
+              "tokens": 18,
+              "charsPerToken": 4.44,
+              "label": "looked at, and the negative results in this devlog have twice sa"
+            },
+            {
+              "from": 123,
+              "to": 123,
+              "chars": 77,
+              "tokens": 18,
+              "charsPerToken": 4.28,
+              "label": "from a day of work: sharing one browser across the gates is not "
+            },
+            {
+              "from": 124,
+              "to": 124,
+              "chars": 35,
+              "tokens": 7,
+              "charsPerToken": 5,
+              "label": "cube peak does not include padding."
+            },
+            {
+              "from": 126,
+              "to": 126,
+              "chars": 17,
+              "tokens": 6,
+              "charsPerToken": 2.83,
+              "label": "5. The reader"
+            },
+            {
+              "from": 128,
+              "to": 128,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "Every tick asks what a visitor or a recruiter now sees that they"
+            },
+            {
+              "from": 129,
+              "to": 129,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "and answers it in one line, or says plainly that this tick was i"
+            },
+            {
+              "from": 130,
+              "to": 130,
+              "chars": 78,
+              "tokens": 20,
+              "charsPerToken": 3.9,
+              "label": "and why that was still the right thing to do. **The code is the "
+            },
+            {
+              "from": 131,
+              "to": 131,
+              "chars": 53,
+              "tokens": 12,
+              "charsPerToken": 4.42,
+              "label": "week of invisible ticks is a week that does not show."
+            },
+            {
+              "from": 133,
+              "to": 133,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "6. The next task, named"
+            },
+            {
+              "from": 135,
+              "to": 135,
+              "chars": 78,
+              "tokens": 18,
+              "charsPerToken": 4.33,
+              "label": "End by naming the next tick's task and the reason it is next, so"
+            },
+            {
+              "from": 136,
+              "to": 136,
+              "chars": 54,
+              "tokens": 12,
+              "charsPerToken": 4.5,
+              "label": "tick starts from a decision rather than from a reread."
+            },
+            {
+              "from": 138,
+              "to": 138,
+              "chars": 28,
+              "tokens": 7,
+              "charsPerToken": 4,
+              "label": "What makes a tick a noop"
+            },
+            {
+              "from": 140,
+              "to": 140,
+              "chars": 80,
+              "tokens": 19,
+              "charsPerToken": 4.21,
+              "label": "Nothing on the ladder, or the one thing on it is blocked and the"
+            },
+            {
+              "from": 141,
+              "to": 141,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "A noop is one line and no commit. **A tick that produced no meas"
+            },
+            {
+              "from": 142,
+              "to": 142,
+              "chars": 32,
+              "tokens": 8,
+              "charsPerToken": 4,
+              "label": "noop that has not admitted it.**"
+            },
+            {
+              "from": 144,
+              "to": 144,
+              "chars": 18,
+              "tokens": 6,
+              "charsPerToken": 3,
+              "label": "3. The projects"
+            },
+            {
+              "from": 146,
+              "to": 146,
+              "chars": 17,
+              "tokens": 7,
+              "charsPerToken": 2.43,
+              "label": "3.1 The order"
+            },
+            {
+              "from": 148,
+              "to": 148,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "From D15, unchanged, because the reasoning behind it has not cha"
+            },
+            {
+              "from": 149,
+              "to": 149,
+              "chars": 78,
+              "tokens": 15,
+              "charsPerToken": 5.2,
+              "label": "buildable from what already exists go first, and the one needing"
+            },
+            {
+              "from": 150,
+              "to": 150,
+              "chars": 72,
+              "tokens": 17,
+              "charsPerToken": 4.24,
+              "label": "run goes late enough that the run can happen on a day it does no"
+            },
+            {
+              "from": 152,
+              "to": 152,
+              "chars": 37,
+              "tokens": 12,
+              "charsPerToken": 3.08,
+              "label": "| # | project | what it is | reuses |"
+            },
+            {
+              "from": 153,
+              "to": 153,
+              "chars": 17,
+              "tokens": 9,
+              "charsPerToken": 1.89,
+              "label": "|---|---|---|---|"
+            },
+            {
+              "from": 154,
+              "to": 154,
+              "chars": 133,
+              "tokens": 35,
+              "charsPerToken": 3.8,
+              "label": "| 1 | `chunkline` | the same passage chunked in English and Gree"
+            },
+            {
+              "from": 155,
+              "to": 155,
+              "chars": 158,
+              "tokens": 41,
+              "charsPerToken": 3.85,
+              "label": "| 2 | `agentscope` | a failure taxonomy of agent runs, each mode"
+            },
+            {
+              "from": 156,
+              "to": 156,
+              "chars": 128,
+              "tokens": 34,
+              "charsPerToken": 3.76,
+              "label": "| 3 | `evalkit` | an evaluation runner that refuses to report a "
+            },
+            {
+              "from": 157,
+              "to": 157,
+              "chars": 126,
+              "tokens": 30,
+              "charsPerToken": 4.2,
+              "label": "| 4 | `gatewaylab` | what providers really do under load, measur"
+            },
+            {
+              "from": 158,
+              "to": 158,
+              "chars": 94,
+              "tokens": 29,
+              "charsPerToken": 3.24,
+              "label": "| 5 | `promptcost` | a cost heatmap over a prompt | `tokenlab`'s"
+            },
+            {
+              "from": 159,
+              "to": 159,
+              "chars": 129,
+              "tokens": 38,
+              "charsPerToken": 3.39,
+              "label": "| 6 | `retrievalbench` | `chunkline` stage two: in browser embed"
+            },
+            {
+              "from": 161,
+              "to": 161,
+              "chars": 79,
+              "tokens": 21,
+              "charsPerToken": 3.76,
+              "label": "Specifications live in `specs/`. `chunkline`'s is written, measu"
+            },
+            {
+              "from": 162,
+              "to": 162,
+              "chars": 73,
+              "tokens": 15,
+              "charsPerToken": 4.87,
+              "label": "The rest are written the tick before that project is started, no"
+            },
+            {
+              "from": 164,
+              "to": 164,
+              "chars": 46,
+              "tokens": 13,
+              "charsPerToken": 3.54,
+              "label": "3.2 When a project is done enough to leave"
+            },
+            {
+              "from": 166,
+              "to": 166,
+              "chars": 78,
+              "tokens": 20,
+              "charsPerToken": 3.9,
+              "label": "A project is **in a nice spot**, and the next tick moves on, whe"
+            },
+            {
+              "from": 167,
+              "to": 167,
+              "chars": 41,
+              "tokens": 9,
+              "charsPerToken": 4.56,
+              "label": "are true and the tick says so explicitly:"
+            },
+            {
+              "from": 169,
+              "to": 169,
+              "chars": 70,
+              "tokens": 18,
+              "charsPerToken": 3.89,
+              "label": "1. `npm run build` passes, and the build runs the project's own "
+            },
+            {
+              "from": 170,
+              "to": 170,
+              "chars": 76,
+              "tokens": 17,
+              "charsPerToken": 4.47,
+              "label": "2. Every number in its README is produced by a command in the re"
+            },
+            {
+              "from": 171,
+              "to": 171,
+              "chars": 47,
+              "tokens": 11,
+              "charsPerToken": 4.27,
+              "label": "pinned with provenance, and a gate holds it."
+            },
+            {
+              "from": 172,
+              "to": 172,
+              "chars": 74,
+              "tokens": 24,
+              "charsPerToken": 3.08,
+              "label": "3. It has been **looked at in a real browser at 1280 and at 390*"
+            },
+            {
+              "from": 173,
+              "to": 173,
+              "chars": 57,
+              "tokens": 10,
+              "charsPerToken": 5.7,
+              "label": "screenshot has been examined rather than merely taken."
+            },
+            {
+              "from": 174,
+              "to": 174,
+              "chars": 70,
+              "tokens": 17,
+              "charsPerToken": 4.12,
+              "label": "4. The README leads with the claim, then the picture, then the m"
+            },
+            {
+              "from": 175,
+              "to": 175,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "5. There is at least one gate that would have caught the defect "
+            },
+            {
+              "from": 176,
+              "to": 176,
+              "chars": 70,
+              "tokens": 16,
+              "charsPerToken": 4.38,
+              "label": "plausibly ships with, and that gate has a control proving it bit"
+            },
+            {
+              "from": 178,
+              "to": 178,
+              "chars": 78,
+              "tokens": 15,
+              "charsPerToken": 5.2,
+              "label": "Anything short of that and the next tick continues the same proj"
+            },
+            {
+              "from": 179,
+              "to": 179,
+              "chars": 23,
+              "tokens": 6,
+              "charsPerToken": 3.83,
+              "label": "of the five is missing."
+            },
+            {
+              "from": 181,
+              "to": 181,
+              "chars": 71,
+              "tokens": 18,
+              "charsPerToken": 3.94,
+              "label": "3.3 Nothing enters the queue that cannot be built in a day of ti"
+            },
+            {
+              "from": 183,
+              "to": 183,
+              "chars": 74,
+              "tokens": 18,
+              "charsPerToken": 4.11,
+              "label": "D14's rule, restated because it still binds. A project larger th"
+            },
+            {
+              "from": 184,
+              "to": 184,
+              "chars": 81,
+              "tokens": 19,
+              "charsPerToken": 4.26,
+              "label": "decomposed into stages that each stand alone: its own claim, its"
+            },
+            {
+              "from": 185,
+              "to": 185,
+              "chars": 26,
+              "tokens": 7,
+              "charsPerToken": 3.71,
+              "label": "own number, its own gates."
+            },
+            {
+              "from": 187,
+              "to": 187,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 189,
+              "to": 189,
+              "chars": 16,
+              "tokens": 5,
+              "charsPerToken": 3.2,
+              "label": "4. Publishing"
+            },
+            {
+              "from": 191,
+              "to": 191,
+              "chars": 80,
+              "tokens": 15,
+              "charsPerToken": 5.33,
+              "label": "**One project published every two days.** Between publications, "
+            },
+            {
+              "from": 192,
+              "to": 192,
+              "chars": 76,
+              "tokens": 14,
+              "charsPerToken": 5.43,
+              "label": "whatever is already public so the profile shows work happening: "
+            },
+            {
+              "from": 193,
+              "to": 193,
+              "chars": 63,
+              "tokens": 16,
+              "charsPerToken": 3.94,
+              "label": "pushes a day, each one a coherent piece, never an empty commit."
+            },
+            {
+              "from": 195,
+              "to": 195,
+              "chars": 74,
+              "tokens": 24,
+              "charsPerToken": 3.08,
+              "label": "The release itself is `MAINTAIN-PROMPT.md` section 4 and `RELEAS"
+            },
+            {
+              "from": 196,
+              "to": 196,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "steps 1 to 5, unchanged: the repository is created with its desc"
+            },
+            {
+              "from": 197,
+              "to": 197,
+              "chars": 75,
+              "tokens": 17,
+              "charsPerToken": 4.41,
+              "label": "and homepage already written in `docs/PUBLISH.md`, `main` carrie"
+            },
+            {
+              "from": 198,
+              "to": 198,
+              "chars": 81,
+              "tokens": 19,
+              "charsPerToken": 4.26,
+              "label": "history, Pages goes on, the live URL is verified **in a browser*"
+            },
+            {
+              "from": 199,
+              "to": 199,
+              "chars": 45,
+              "tokens": 11,
+              "charsPerToken": 4.09,
+              "label": "and last push of that day adds the live link."
+            },
+            {
+              "from": 201,
+              "to": 201,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "**The README is the marketing.** It is written for a recruiter w"
+            },
+            {
+              "from": 202,
+              "to": 202,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "seconds, then for an engineer who gives it two minutes, then for"
+            },
+            {
+              "from": 203,
+              "to": 203,
+              "chars": 78,
+              "tokens": 20,
+              "charsPerToken": 3.9,
+              "label": "gives it half an hour, in that order and in that layout. The cla"
+            },
+            {
+              "from": 204,
+              "to": 204,
+              "chars": 54,
+              "tokens": 12,
+              "charsPerToken": 4.5,
+              "label": "picture, the one number that matters, then the method."
+            },
+            {
+              "from": 206,
+              "to": 206,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 208,
+              "to": 208,
+              "chars": 25,
+              "tokens": 7,
+              "charsPerToken": 3.57,
+              "label": "5. The auditor session"
+            },
+            {
+              "from": 210,
+              "to": 210,
+              "chars": 76,
+              "tokens": 20,
+              "charsPerToken": 3.8,
+              "label": "A second session, `broikos-github-ai-projects-auditor`, audits w"
+            },
+            {
+              "from": 211,
+              "to": 211,
+              "chars": 78,
+              "tokens": 19,
+              "charsPerToken": 4.11,
+              "label": "builds. It is a separate pair of eyes on purpose: this session i"
+            },
+            {
+              "from": 212,
+              "to": 212,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "the code it just wrote to see it, and every audit in this worksp"
+            },
+            {
+              "from": 213,
+              "to": 213,
+              "chars": 5,
+              "tokens": 2,
+              "charsPerToken": 2.5,
+              "label": "that."
+            },
+            {
+              "from": 215,
+              "to": 215,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "**The division, and it does not bend:**"
+            },
+            {
+              "from": 217,
+              "to": 217,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "- The auditor **reads, measures, drives a browser, and writes fi"
+            },
+            {
+              "from": 218,
+              "to": 218,
+              "chars": 53,
+              "tokens": 12,
+              "charsPerToken": 4.42,
+              "label": "never edits a project, never commits, never pushes."
+            },
+            {
+              "from": 219,
+              "to": 219,
+              "chars": 75,
+              "tokens": 17,
+              "charsPerToken": 4.41,
+              "label": "- This session **fixes**, and every fix ships with the gate that"
+            },
+            {
+              "from": 220,
+              "to": 220,
+              "chars": 51,
+              "tokens": 11,
+              "charsPerToken": 4.64,
+              "label": "caught it plus a control proving that gate bites."
+            },
+            {
+              "from": 222,
+              "to": 222,
+              "chars": 68,
+              "tokens": 15,
+              "charsPerToken": 4.53,
+              "label": "**How a finding arrives.** The auditor writes one file per pass "
+            },
+            {
+              "from": 223,
+              "to": 223,
+              "chars": 66,
+              "tokens": 21,
+              "charsPerToken": 3.14,
+              "label": "`audits/inbox/<project>-<date>-<perspective>.md`, in the format "
+            },
+            {
+              "from": 224,
+              "to": 224,
+              "chars": 80,
+              "tokens": 21,
+              "charsPerToken": 3.81,
+              "label": "`audits/AUDIT-BRIEF.md`, and messages this session with the verd"
+            },
+            {
+              "from": 225,
+              "to": 225,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "count by severity. This session reads the inbox at the top of ev"
+            },
+            {
+              "from": 226,
+              "to": 226,
+              "chars": 79,
+              "tokens": 21,
+              "charsPerToken": 3.76,
+              "label": "the findings into `state/state.json` as tasks, and moves the fil"
+            },
+            {
+              "from": 228,
+              "to": 228,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "**Disagreement is settled by measurement.** If a finding is wron"
+            },
+            {
+              "from": 229,
+              "to": 229,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "with the command that shows it is wrong, in the devlog, and the "
+            },
+            {
+              "from": 230,
+              "to": 230,
+              "chars": 73,
+              "tokens": 14,
+              "charsPerToken": 5.21,
+              "label": "Five entries in the queue turned out stale on 23 September becau"
+            },
+            {
+              "from": 231,
+              "to": 231,
+              "chars": 51,
+              "tokens": 12,
+              "charsPerToken": 4.25,
+              "label": "checked; the fix for that is checking, not arguing."
+            },
+            {
+              "from": 233,
+              "to": 233,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 235,
+              "to": 235,
+              "chars": 29,
+              "tokens": 7,
+              "charsPerToken": 4.14,
+              "label": "6. Verification, unchanged"
+            },
+            {
+              "from": 237,
+              "to": 237,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "- Run the gates. Paste the real output."
+            },
+            {
+              "from": 238,
+              "to": 238,
+              "chars": 63,
+              "tokens": 20,
+              "charsPerToken": 3.15,
+              "label": "- Anything visual: look at it in a browser, at 1280 and at 390."
+            },
+            {
+              "from": 239,
+              "to": 239,
+              "chars": 77,
+              "tokens": 18,
+              "charsPerToken": 4.28,
+              "label": "- A bug fix: reproduce the failure first with the exact input, t"
+            },
+            {
+              "from": 240,
+              "to": 240,
+              "chars": 25,
+              "tokens": 7,
+              "charsPerToken": 3.57,
+              "label": "re-run that same input."
+            },
+            {
+              "from": 241,
+              "to": 241,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "- Every fix ships with the gate that would have caught it, and t"
+            },
+            {
+              "from": 242,
+              "to": 242,
+              "chars": 43,
+              "tokens": 9,
+              "charsPerToken": 4.78,
+              "label": "with a negative control proving it bites."
+            },
+            {
+              "from": 243,
+              "to": 243,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "- **A control that passes against the broken code is worse than "
+            },
+            {
+              "from": 244,
+              "to": 244,
+              "chars": 90,
+              "tokens": 24,
+              "charsPerToken": 3.75,
+              "label": "entries that record it are what `projects/agentscope, npm run bu"
+            },
+            {
+              "from": 245,
+              "to": 245,
+              "chars": 81,
+              "tokens": 20,
+              "charsPerToken": 4.05,
+              "label": "section 2b says why the count is not written here. If a control "
+            },
+            {
+              "from": 246,
+              "to": 246,
+              "chars": 25,
+              "tokens": 6,
+              "charsPerToken": 4.17,
+              "label": "it before believing it."
+            },
+            {
+              "from": 248,
+              "to": 248,
+              "chars": 43,
+              "tokens": 11,
+              "charsPerToken": 3.91,
+              "label": "If a gate fails, the tick becomes the gate."
+            },
+            {
+              "from": 250,
+              "to": 250,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 252,
+              "to": 252,
+              "chars": 24,
+              "tokens": 8,
+              "charsPerToken": 3,
+              "label": "7. Write back, always"
+            },
+            {
+              "from": 254,
+              "to": 254,
+              "chars": 80,
+              "tokens": 22,
+              "charsPerToken": 3.64,
+              "label": "1. `DEVLOG.md`: one entry per tick. Shell timestamp, tick number"
+            },
+            {
+              "from": 255,
+              "to": 255,
+              "chars": 70,
+              "tokens": 19,
+              "charsPerToken": 3.68,
+              "label": "changed, the output that proves it, and which of section 3.2's f"
+            },
+            {
+              "from": 256,
+              "to": 256,
+              "chars": 38,
+              "tokens": 7,
+              "charsPerToken": 5.43,
+              "label": "conditions the project still fails."
+            },
+            {
+              "from": 257,
+              "to": 257,
+              "chars": 77,
+              "tokens": 19,
+              "charsPerToken": 4.05,
+              "label": "2. `state/state.json`: findings closed with the tick that closed"
+            },
+            {
+              "from": 258,
+              "to": 258,
+              "chars": 30,
+              "tokens": 9,
+              "charsPerToken": 3.33,
+              "label": "incremented, `updated` set."
+            },
+            {
+              "from": 259,
+              "to": 259,
+              "chars": 44,
+              "tokens": 15,
+              "charsPerToken": 2.93,
+              "label": "3. `DECISIONS.md`: only if a fork was taken."
+            },
+            {
+              "from": 261,
+              "to": 261,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 263,
+              "to": 263,
+              "chars": 11,
+              "tokens": 5,
+              "charsPerToken": 2.2,
+              "label": "8. Never"
+            },
+            {
+              "from": 265,
+              "to": 265,
+              "chars": 27,
+              "tokens": 7,
+              "charsPerToken": 3.86,
+              "label": "- Never co-author a commit."
+            },
+            {
+              "from": 266,
+              "to": 266,
+              "chars": 59,
+              "tokens": 12,
+              "charsPerToken": 4.92,
+              "label": "- Never write a number into prose that no command produces."
+            },
+            {
+              "from": 267,
+              "to": 267,
+              "chars": 58,
+              "tokens": 14,
+              "charsPerToken": 4.14,
+              "label": "- Never leave the working tree dirty at the end of a tick."
+            },
+            {
+              "from": 268,
+              "to": 268,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "- Never use dashes as punctuation, and never emojis, in any file"
+            },
+            {
+              "from": 269,
+              "to": 269,
+              "chars": 26,
+              "tokens": 7,
+              "charsPerToken": 3.71,
+              "label": "- Never force push `main`."
+            },
+            {
+              "from": 270,
+              "to": 270,
+              "chars": 79,
+              "tokens": 16,
+              "charsPerToken": 4.94,
+              "label": "- Never let the auditor edit a project, and never fix a finding "
+            },
+            {
+              "from": 271,
+              "to": 271,
+              "chars": 14,
+              "tokens": 4,
+              "charsPerToken": 3.5,
+              "label": "the finding."
+            },
+            {
+              "from": 273,
+              "to": 273,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 275,
+              "to": 275,
+              "chars": 21,
+              "tokens": 7,
+              "charsPerToken": 3,
+              "label": "9. The tick report"
+            },
+            {
+              "from": 277,
+              "to": 277,
+              "chars": 18,
+              "tokens": 4,
+              "charsPerToken": 4.5,
+              "label": "Six lines maximum."
+            },
+            {
+              "from": 279,
+              "to": 279,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "```"
+            },
+            {
+              "from": 280,
+              "to": 280,
+              "chars": 39,
+              "tokens": 9,
+              "charsPerToken": 4.33,
+              "label": "tick N | project | ladder item and task"
+            },
+            {
+              "from": 281,
+              "to": 281,
+              "chars": 39,
+              "tokens": 8,
+              "charsPerToken": 4.88,
+              "label": "what it measured first, with the number"
+            },
+            {
+              "from": 282,
+              "to": 282,
+              "chars": 57,
+              "tokens": 12,
+              "charsPerToken": 4.75,
+              "label": "what changed, and what the sweep for the same shape found"
+            },
+            {
+              "from": 283,
+              "to": 283,
+              "chars": 28,
+              "tokens": 5,
+              "charsPerToken": 5.6,
+              "label": "the control's failure output"
+            },
+            {
+              "from": 284,
+              "to": 284,
+              "chars": 32,
+              "tokens": 6,
+              "charsPerToken": 5.33,
+              "label": "what was checked and found clean"
+            },
+            {
+              "from": 285,
+              "to": 285,
+              "chars": 62,
+              "tokens": 14,
+              "charsPerToken": 4.43,
+              "label": "what a reader sees now, or why this tick was invisible to them"
+            },
+            {
+              "from": 286,
+              "to": 286,
+              "chars": 41,
+              "tokens": 10,
+              "charsPerToken": 4.1,
+              "label": "which of the five it still fails, or none"
+            },
+            {
+              "from": 287,
+              "to": 287,
+              "chars": 29,
+              "tokens": 8,
+              "charsPerToken": 3.63,
+              "label": "next tick, and why it is next"
+            },
+            {
+              "from": 288,
+              "to": 288,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "```"
+            },
+            {
+              "from": 290,
+              "to": 290,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "Six lines maximum, so this is what to compress **into** six line"
+            },
+            {
+              "from": 291,
+              "to": 291,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "print. If a tick cannot fill it, the tick was thin and the repor"
+            },
+            {
+              "from": 292,
+              "to": 292,
+              "chars": 55,
+              "tokens": 11,
+              "charsPerToken": 5,
+              "label": "which part is missing rather than leaving the line out."
+            }
+          ],
+          "spread": {
+            "regions": 216,
+            "low": 1.89,
+            "p5": 3,
+            "p25": 3.63,
+            "median": 4.14,
+            "p75": 4.59,
+            "p95": 5.2,
+            "high": 5.71,
+            "band": 1.73,
+            "fullRange": 3.02,
+            "outside": 20
+          }
+        }
+      }
+    },
+    {
+      "id": "contract-json",
+      "title": "The same prompt, with a price table pasted in",
+      "note": "The control. Composed from the two committed inputs, so the instrument can be seen to work.",
+      "lines": 316,
+      "chars": 14434,
+      "tokens": 3723,
+      "text": "# The build contract, v3\n\n> Supersedes `LOOP-PROMPT.md` for anything not yet published. `MAINTAIN-PROMPT.md`\n> still governs a project that is public: the moment a repository exists, that\n> file takes over for it and this one stops applying to it.\n\nEvery **30 minutes**. One tick, one task, one entry.\n\nThe instruction this file exists to carry out: build every project in the queue,\nthen optimise and fix them, then audit them on rotation, and publish one every\ntwo days with progress pushes in between.\n\n---\n\n## 0. Who you are this tick\n\nThe code is the portfolio. Every file will be read by somebody deciding whether\nto hire the person who wrote it, so it is written to be read: the comment says\nwhy, not what; the commit message says what was wrong, what changed and what\nproves it; the README leads with the claim and the picture and puts the method\nunderneath for the people who check.\n\nMethodical, not fast. A project that builds and lies is worth less than no\nproject. **Every number on a page is produced by a command in its repository**,\nand where that is impossible the number is pinned with the file it came from and\nthat file's hash.\n\nYou are the only author. Nobody is co-credited and no tool is named in a commit.\n\n---\n\n## 1. Every tick, before anything else\n\n1. `state/state.json`: the queue, the open findings, whose turn it is.\n2. The last 40 lines of `DEVLOG.md`.\n3. `DECISIONS.md` and `RELEASE-PLAN.md`.\n4. **`audits/inbox/`**, for anything the auditor session has filed since the last\n   tick. See section 5.\n5. The live deploy status of every published project, via the Actions API.\n\nTake the time from the shell. Never infer it.\n\n---\n\n## 2. Pick exactly one task\n\nWalk the ladder, stop at the first hit.\n\n1. **A published page is broken, or its last deploy failed.** Nothing below this\n   matters while something people can open is wrong.\n2. **A claim a repository cannot reproduce.** On a page, in a README, in an alt\n   text. Published first, then unpublished.\n3. **An open finding at `severity: high`**, published projects first.\n4. **The release, if one is due today.** See section 4.\n5. **The next project that does not exist yet**, in the order in section 3. Build\n   it until it reaches the standard in section 3.2, then stop and say so.\n6. **An open finding at `severity: medium`**, oldest audit first.\n7. **An audit, on rotation**, once every project in the queue has been built. One\n   perspective, one project, by hand, into `audits/`.\n8. **Nothing.** A one line noop entry. No commit.\n\nOne task. A tick that does one thing completely beats a tick that half does\nthree.\n\n---\n\n## 2b. What a tick has to contain\n\nOne task, done to the bottom. The tick is not the change; the change is the\nsmallest part of it. A tick that edits a file, commits and stops has done the\ntyping and left the work.\n\nEvery tick carries all six of these, and the report says so.\n\n### 1. A measurement before the change\n\n**No fix without a number first.** Reproduce the defect with a command and paste\nwhat it printed. If the defect cannot be reproduced, that is the finding, and\nthe tick becomes proving it is not there.\n\nThis is the difference between the ticks in this devlog that hold up and the\nones that had to be redone. \"The ramp is too dark\" produced an argument; \"peak\nluminance runs 46 to 166 against a background of 6, and 40 against 75 with the\ncurve\" produced a floor with a reason.\n\n### 2. The class, not the instance\n\nBefore committing, **search every project for the same shape** and say what the\nsearch found, including when it finds nothing. A defect that happened once\nhappened because something allowed it, and that something is still there.\n\nWorked, every time it was done: one corrupted escape became a scan that found\nfour files and a gate; one stale queue entry became a sweep that closed nine; one\nnumber in prose became a gate that reads three files. Skipped, it costs a later\ntick: the same two findings were filed twice, two days apart, because the first\npair was fixed as instances.\n\n### 3. A gate whose control fails\n\nEvery fix ships with the gate that would have caught it, and the gate ships with\nthe broken state restored, run, and its failure output pasted.\n\n**If the control passes, the gate is wrong.** It has never once been the gate\nbeing right: the assertion measured a proxy, or its condition could never occur,\nor the build had failed and the page under test was the fixed one, or the claim\nwas a bare number that the document says somewhere else anyway. Suspect a passing\ncontrol before believing it, and when it turns out wrong, the tick's real work is\nthe assertion rather than the fix.\n\nHow often it has happened is a number this file used to state twice, as \"nine\ntimes\" here and \"eight times\" in section 6, adding that every one is in the\ndevlog. Neither was reproducible: `projects/agentscope, npm run build:corpus,` finds the\nentries that record it, one of which says six of that day's controls were wrong\nfirst, so the corpus supports anywhere from four to twelve against a unit nobody\nhad defined. Corrected at tick 104, by the tick whose own control passed against\na broken spec while it was being written. **Run the command rather than quoting a\ncount from here.**\n\n### 4. Something checked and found clean\n\nName one hypothesis the tick tested and killed, with the measurement that killed\nit. A tick that reports only what it changed leaves nobody able to tell what it\nlooked at, and the negative results in this devlog have twice saved a later tick\nfrom a day of work: sharing one browser across the gates is not worth it, the\ncube peak does not include padding.\n\n### 5. The reader\n\nEvery tick asks what a visitor or a recruiter now sees that they did not before,\nand answers it in one line, or says plainly that this tick was invisible to them\nand why that was still the right thing to do. **The code is the portfolio.** A\nweek of invisible ticks is a week that does not show.\n\n### 6. The next task, named\n\nEnd by naming the next tick's task and the reason it is next, so the following\ntick starts from a decision rather than from a reread.\n\n### What makes a tick a noop\n\nNothing on the ladder, or the one thing on it is blocked and the block is named.\nA noop is one line and no commit. **A tick that produced no measurement is a\nnoop that has not admitted it.**\n\n## 3. The projects\n\n### 3.1 The order\n\nFrom D15, unchanged, because the reasoning behind it has not changed: the ones\nbuildable from what already exists go first, and the one needing a measurement\nrun goes late enough that the run can happen on a day it does not block.\n\n| # | project | what it is | reuses |\n|---|---|---|---|\n| 1 | `chunkline` | the same passage chunked in English and Greek, every boundary drawn on the text | `tokenlab`'s tokenizer engine |\n| 2 | `agentscope` | a failure taxonomy of agent runs, each mode with a real replayable run behind it | this workspace's own 95 devlog entries and 27 audits |\n| 3 | `evalkit` | an evaluation runner that refuses to report a number its sample size cannot carry | `bslm`'s benchmark shape |\n| 4 | `gatewaylab` | what providers really do under load, measured, drawn as an instrument | a drill that runs offline first |\n| 5 | `promptcost` | a cost heatmap over a prompt | `tokenlab`'s tokenizers and pricing data |\n| 6 | `retrievalbench` | `chunkline` stage two: in browser embeddings and a leaderboard | `watch-it-think`'s int8 ONNX pipeline |\n\nSpecifications live in `specs/`. `chunkline`'s is written, measured and frozen.\nThe rest are written the tick before that project is started, not before.\n\n### 3.2 When a project is done enough to leave\n\nA project is **in a nice spot**, and the next tick moves on, when all of these\nare true and the tick says so explicitly:\n\n1. `npm run build` passes, and the build runs the project's own gates.\n2. Every number in its README is produced by a command in the repository, or\n   pinned with provenance, and a gate holds it.\n3. It has been **looked at in a real browser at 1280 and at 390**, and the\n   screenshot has been examined rather than merely taken.\n4. The README leads with the claim, then the picture, then the method.\n5. There is at least one gate that would have caught the defect the project most\n   plausibly ships with, and that gate has a control proving it bites.\n\nAnything short of that and the next tick continues the same project. Say which\nof the five is missing.\n\n### 3.3 Nothing enters the queue that cannot be built in a day of ticks\n\nD14's rule, restated because it still binds. A project larger than that is\ndecomposed into stages that each stand alone: its own claim, its own picture, its\nown number, its own gates.\n\n---\n\n## 4. Publishing\n\n**One project published every two days.** Between publications, push progress to\nwhatever is already public so the profile shows work happening: one to three\npushes a day, each one a coherent piece, never an empty commit.\n\nThe release itself is `MAINTAIN-PROMPT.md` section 4 and `RELEASE-PLAN.md`\nsteps 1 to 5, unchanged: the repository is created with its description, topics\nand homepage already written in `docs/PUBLISH.md`, `main` carries the whole\nhistory, Pages goes on, the live URL is verified **in a browser**, and the second\nand last push of that day adds the live link.\n\n**The README is the marketing.** It is written for a recruiter who gives it ten\nseconds, then for an engineer who gives it two minutes, then for a reviewer who\ngives it half an hour, in that order and in that layout. The claim, the moving\npicture, the one number that matters, then the method.\n\n---\n\n## 5. The auditor session\n\nA second session, `broikos-github-ai-projects-auditor`, audits what this one\nbuilds. It is a separate pair of eyes on purpose: this session is too close to\nthe code it just wrote to see it, and every audit in this workspace has proved\nthat.\n\n**The division, and it does not bend:**\n\n- The auditor **reads, measures, drives a browser, and writes findings**. It\n  never edits a project, never commits, never pushes.\n- This session **fixes**, and every fix ships with the gate that would have\n  caught it plus a control proving that gate bites.\n\n**How a finding arrives.** The auditor writes one file per pass into\n`audits/inbox/<project>-<date>-<perspective>.md`, in the format of\n`audits/AUDIT-BRIEF.md`, and messages this session with the verdict line and the\ncount by severity. This session reads the inbox at the top of every tick, folds\nthe findings into `state/state.json` as tasks, and moves the file to `audits/`.\n\n**Disagreement is settled by measurement.** If a finding is wrong, it is answered\nwith the command that shows it is wrong, in the devlog, and the auditor is told.\nFive entries in the queue turned out stale on 23 September because nobody\nchecked; the fix for that is checking, not arguing.\n\n---\n\n## 6. Verification, unchanged\n\n- Run the gates. Paste the real output.\n- Anything visual: look at it in a browser, at 1280 and at 390.\n- A bug fix: reproduce the failure first with the exact input, then fix, then\n  re-run that same input.\n- Every fix ships with the gate that would have caught it, and that gate ships\n  with a negative control proving it bites.\n- **A control that passes against the broken code is worse than no control.** The\n  entries that record it are what `projects/agentscope, npm run build:corpus,` counts, and\n  section 2b says why the count is not written here. If a control passes, suspect\n  it before believing it.\n\nIf a gate fails, the tick becomes the gate.\n\n---\n\n## 7. Write back, always\n\n1. `DEVLOG.md`: one entry per tick. Shell timestamp, tick number, the task, what\n   changed, the output that proves it, and which of section 3.2's five\n   conditions the project still fails.\n2. `state/state.json`: findings closed with the tick that closed them, `tick`\n   incremented, `updated` set.\n3. `DECISIONS.md`: only if a fork was taken.\n\n---\n\n## 8. Never\n\n- Never co-author a commit.\n- Never write a number into prose that no command produces.\n- Never leave the working tree dirty at the end of a tick.\n- Never use dashes as punctuation, and never emojis, in any file or message.\n- Never force push `main`.\n- Never let the auditor edit a project, and never fix a finding without reading\n  the finding.\n\n---\n\n## 9. The tick report\n\nSix lines maximum.\n\n```\ntick N | project | ladder item and task\nwhat it measured first, with the number\nwhat changed, and what the sweep for the same shape found\nthe control's failure output\nwhat was checked and found clean\nwhat a reader sees now, or why this tick was invisible to them\nwhich of the five it still fails, or none\nnext tick, and why it is next\n```\n\nSix lines maximum, so this is what to compress **into** six lines, not a list to\nprint. If a tick cannot fill it, the tick was thin and the report should say\nwhich part is missing rather than leaving the line out.\n\n## 10. The price table this run is costed against\n\nPasted in whole, the way a tool schema or a retrieved record arrives.\n\n```json\n{\n  \"checked\": \"2026-09-20\",\n  \"source\": \"https://developers.openai.com/api/docs/pricing\",\n  \"note\": \"Standard tier, per million tokens, in US dollars. Batch, flex and long context tiers differ. Regional processing endpoints carry a 10 percent uplift for models released on or after 2026-03-05. These are the only numbers in this repository that are not measured here, which is why they carry a date and a link.\",\n  \"models\": [\n    { \"id\": \"gpt-6-astra\", \"label\": \"GPT-6 Astra\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 10.0, \"outputPerMillion\": 50.0 },\n    { \"id\": \"gpt-5.6-sol\", \"label\": \"GPT-5.6 Sol\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 4.0, \"outputPerMillion\": 20.0 },\n    { \"id\": \"gpt-5.6-terra\", \"label\": \"GPT-5.6 Terra\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 2.0, \"outputPerMillion\": 12.0 },\n    { \"id\": \"gpt-5.6-luna\", \"label\": \"GPT-5.6 Luna\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 0.2, \"outputPerMillion\": 1.2 },\n    { \"id\": \"gpt-5.5\", \"label\": \"GPT-5.5\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 5.0, \"outputPerMillion\": 30.0 },\n    { \"id\": \"gpt-4.1\", \"label\": \"GPT-4.1\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 2.0, \"outputPerMillion\": 8.0 },\n    { \"id\": \"gpt-4o\", \"label\": \"GPT-4o\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 2.5, \"outputPerMillion\": 10.0 },\n    { \"id\": \"gpt-4o-mini\", \"label\": \"GPT-4o mini\", \"encoding\": \"o200k_base\", \"inputPerMillion\": 0.15, \"outputPerMillion\": 0.6 }\n  ]\n}\n```\n",
+      "grains": {
+        "section": {
+          "regions": [
+            {
+              "from": 0,
+              "to": 13,
+              "chars": 510,
+              "tokens": 123,
+              "charsPerToken": 4.15,
+              "label": "The build contract, v3"
+            },
+            {
+              "from": 14,
+              "to": 30,
+              "chars": 723,
+              "tokens": 169,
+              "charsPerToken": 4.28,
+              "label": "0. Who you are this tick"
+            },
+            {
+              "from": 31,
+              "to": 43,
+              "chars": 422,
+              "tokens": 117,
+              "charsPerToken": 3.61,
+              "label": "1. Every tick, before anything else"
+            },
+            {
+              "from": 44,
+              "to": 65,
+              "chars": 951,
+              "tokens": 246,
+              "charsPerToken": 3.87,
+              "label": "2. Pick exactly one task"
+            },
+            {
+              "from": 66,
+              "to": 143,
+              "chars": 3716,
+              "tokens": 875,
+              "charsPerToken": 4.25,
+              "label": "2b. What a tick has to contain"
+            },
+            {
+              "from": 144,
+              "to": 188,
+              "chars": 2346,
+              "tokens": 595,
+              "charsPerToken": 3.94,
+              "label": "3. The projects"
+            },
+            {
+              "from": 189,
+              "to": 207,
+              "chars": 900,
+              "tokens": 216,
+              "charsPerToken": 4.17,
+              "label": "4. Publishing"
+            },
+            {
+              "from": 208,
+              "to": 234,
+              "chars": 1242,
+              "tokens": 306,
+              "charsPerToken": 4.06,
+              "label": "5. The auditor session"
+            },
+            {
+              "from": 235,
+              "to": 251,
+              "chars": 693,
+              "tokens": 174,
+              "charsPerToken": 3.98,
+              "label": "6. Verification, unchanged"
+            },
+            {
+              "from": 252,
+              "to": 262,
+              "chars": 376,
+              "tokens": 103,
+              "charsPerToken": 3.65,
+              "label": "7. Write back, always"
+            },
+            {
+              "from": 263,
+              "to": 274,
+              "chars": 364,
+              "tokens": 86,
+              "charsPerToken": 4.23,
+              "label": "8. Never"
+            },
+            {
+              "from": 275,
+              "to": 293,
+              "chars": 601,
+              "tokens": 147,
+              "charsPerToken": 4.09,
+              "label": "9. The tick report"
+            },
+            {
+              "from": 294,
+              "to": 315,
+              "chars": 1578,
+              "tokens": 566,
+              "charsPerToken": 2.79,
+              "label": "10. The price table this run is costed against"
+            }
+          ],
+          "spread": {
+            "regions": 13,
+            "low": 2.79,
+            "p5": 2.79,
+            "p25": 3.87,
+            "median": 4.06,
+            "p75": 4.17,
+            "p95": 4.25,
+            "high": 4.28,
+            "band": 1.52,
+            "fullRange": 1.53,
+            "outside": 1
+          }
+        },
+        "paragraph": {
+          "regions": [
+            {
+              "from": 0,
+              "to": 0,
+              "chars": 24,
+              "tokens": 7,
+              "charsPerToken": 3.43,
+              "label": "The build contract, v3"
+            },
+            {
+              "from": 2,
+              "to": 4,
+              "chars": 221,
+              "tokens": 58,
+              "charsPerToken": 3.81,
+              "label": "> Supersedes `LOOP-PROMPT.md` for anything not yet published. `M"
+            },
+            {
+              "from": 6,
+              "to": 6,
+              "chars": 52,
+              "tokens": 15,
+              "charsPerToken": 3.47,
+              "label": "Every **30 minutes**. One tick, one task, one entry."
+            },
+            {
+              "from": 8,
+              "to": 10,
+              "chars": 201,
+              "tokens": 41,
+              "charsPerToken": 4.9,
+              "label": "The instruction this file exists to carry out: build every proje"
+            },
+            {
+              "from": 12,
+              "to": 12,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 14,
+              "to": 14,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "0. Who you are this tick"
+            },
+            {
+              "from": 16,
+              "to": 20,
+              "chars": 351,
+              "tokens": 80,
+              "charsPerToken": 4.39,
+              "label": "The code is the portfolio. Every file will be read by somebody d"
+            },
+            {
+              "from": 22,
+              "to": 25,
+              "chars": 253,
+              "tokens": 58,
+              "charsPerToken": 4.36,
+              "label": "Methodical, not fast. A project that builds and lies is worth le"
+            },
+            {
+              "from": 27,
+              "to": 27,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "You are the only author. Nobody is co-credited and no tool is na"
+            },
+            {
+              "from": 29,
+              "to": 29,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 31,
+              "to": 31,
+              "chars": 38,
+              "tokens": 10,
+              "charsPerToken": 3.8,
+              "label": "1. Every tick, before anything else"
+            },
+            {
+              "from": 33,
+              "to": 38,
+              "chars": 329,
+              "tokens": 94,
+              "charsPerToken": 3.5,
+              "label": "1. `state/state.json`: the queue, the open findings, whose turn "
+            },
+            {
+              "from": 40,
+              "to": 40,
+              "chars": 45,
+              "tokens": 11,
+              "charsPerToken": 4.09,
+              "label": "Take the time from the shell. Never infer it."
+            },
+            {
+              "from": 42,
+              "to": 42,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 44,
+              "to": 44,
+              "chars": 27,
+              "tokens": 8,
+              "charsPerToken": 3.38,
+              "label": "2. Pick exactly one task"
+            },
+            {
+              "from": 46,
+              "to": 46,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "Walk the ladder, stop at the first hit."
+            },
+            {
+              "from": 48,
+              "to": 59,
+              "chars": 791,
+              "tokens": 207,
+              "charsPerToken": 3.82,
+              "label": "1. **A published page is broken, or its last deploy failed.** No"
+            },
+            {
+              "from": 61,
+              "to": 62,
+              "chars": 82,
+              "tokens": 19,
+              "charsPerToken": 4.32,
+              "label": "One task. A tick that does one thing completely beats a tick tha"
+            },
+            {
+              "from": 64,
+              "to": 64,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 66,
+              "to": 66,
+              "chars": 33,
+              "tokens": 11,
+              "charsPerToken": 3,
+              "label": "2b. What a tick has to contain"
+            },
+            {
+              "from": 68,
+              "to": 70,
+              "chars": 179,
+              "tokens": 46,
+              "charsPerToken": 3.89,
+              "label": "One task, done to the bottom. The tick is not the change; the ch"
+            },
+            {
+              "from": 72,
+              "to": 72,
+              "chars": 60,
+              "tokens": 14,
+              "charsPerToken": 4.29,
+              "label": "Every tick carries all six of these, and the report says so."
+            },
+            {
+              "from": 74,
+              "to": 74,
+              "chars": 38,
+              "tokens": 9,
+              "charsPerToken": 4.22,
+              "label": "1. A measurement before the change"
+            },
+            {
+              "from": 76,
+              "to": 78,
+              "chars": 200,
+              "tokens": 46,
+              "charsPerToken": 4.35,
+              "label": "**No fix without a number first.** Reproduce the defect with a c"
+            },
+            {
+              "from": 80,
+              "to": 83,
+              "chars": 273,
+              "tokens": 73,
+              "charsPerToken": 3.74,
+              "label": "This is the difference between the ticks in this devlog that hol"
+            },
+            {
+              "from": 85,
+              "to": 85,
+              "chars": 34,
+              "tokens": 10,
+              "charsPerToken": 3.4,
+              "label": "2. The class, not the instance"
+            },
+            {
+              "from": 87,
+              "to": 89,
+              "chars": 228,
+              "tokens": 47,
+              "charsPerToken": 4.85,
+              "label": "Before committing, **search every project for the same shape** a"
+            },
+            {
+              "from": 91,
+              "to": 95,
+              "chars": 348,
+              "tokens": 79,
+              "charsPerToken": 4.41,
+              "label": "Worked, every time it was done: one corrupted escape became a sc"
+            },
+            {
+              "from": 97,
+              "to": 97,
+              "chars": 33,
+              "tokens": 9,
+              "charsPerToken": 3.67,
+              "label": "3. A gate whose control fails"
+            },
+            {
+              "from": 99,
+              "to": 100,
+              "chars": 143,
+              "tokens": 31,
+              "charsPerToken": 4.61,
+              "label": "Every fix ships with the gate that would have caught it, and the"
+            },
+            {
+              "from": 102,
+              "to": 107,
+              "chars": 437,
+              "tokens": 98,
+              "charsPerToken": 4.46,
+              "label": "**If the control passes, the gate is wrong.** It has never once "
+            },
+            {
+              "from": 109,
+              "to": 116,
+              "chars": 585,
+              "tokens": 140,
+              "charsPerToken": 4.18,
+              "label": "How often it has happened is a number this file used to state tw"
+            },
+            {
+              "from": 118,
+              "to": 118,
+              "chars": 40,
+              "tokens": 9,
+              "charsPerToken": 4.44,
+              "label": "4. Something checked and found clean"
+            },
+            {
+              "from": 120,
+              "to": 124,
+              "chars": 355,
+              "tokens": 78,
+              "charsPerToken": 4.55,
+              "label": "Name one hypothesis the tick tested and killed, with the measure"
+            },
+            {
+              "from": 126,
+              "to": 126,
+              "chars": 17,
+              "tokens": 6,
+              "charsPerToken": 2.83,
+              "label": "5. The reader"
+            },
+            {
+              "from": 128,
+              "to": 131,
+              "chars": 294,
+              "tokens": 68,
+              "charsPerToken": 4.32,
+              "label": "Every tick asks what a visitor or a recruiter now sees that they"
+            },
+            {
+              "from": 133,
+              "to": 133,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "6. The next task, named"
+            },
+            {
+              "from": 135,
+              "to": 136,
+              "chars": 133,
+              "tokens": 31,
+              "charsPerToken": 4.29,
+              "label": "End by naming the next tick's task and the reason it is next, so"
+            },
+            {
+              "from": 138,
+              "to": 138,
+              "chars": 28,
+              "tokens": 7,
+              "charsPerToken": 4,
+              "label": "What makes a tick a noop"
+            },
+            {
+              "from": 140,
+              "to": 142,
+              "chars": 190,
+              "tokens": 46,
+              "charsPerToken": 4.13,
+              "label": "Nothing on the ladder, or the one thing on it is blocked and the"
+            },
+            {
+              "from": 144,
+              "to": 144,
+              "chars": 18,
+              "tokens": 6,
+              "charsPerToken": 3,
+              "label": "3. The projects"
+            },
+            {
+              "from": 146,
+              "to": 146,
+              "chars": 17,
+              "tokens": 7,
+              "charsPerToken": 2.43,
+              "label": "3.1 The order"
+            },
+            {
+              "from": 148,
+              "to": 150,
+              "chars": 230,
+              "tokens": 51,
+              "charsPerToken": 4.51,
+              "label": "From D15, unchanged, because the reasoning behind it has not cha"
+            },
+            {
+              "from": 152,
+              "to": 159,
+              "chars": 829,
+              "tokens": 228,
+              "charsPerToken": 3.64,
+              "label": "| # | project | what it is | reuses |"
+            },
+            {
+              "from": 161,
+              "to": 162,
+              "chars": 153,
+              "tokens": 36,
+              "charsPerToken": 4.25,
+              "label": "Specifications live in `specs/`. `chunkline`'s is written, measu"
+            },
+            {
+              "from": 164,
+              "to": 164,
+              "chars": 46,
+              "tokens": 13,
+              "charsPerToken": 3.54,
+              "label": "3.2 When a project is done enough to leave"
+            },
+            {
+              "from": 166,
+              "to": 167,
+              "chars": 120,
+              "tokens": 30,
+              "charsPerToken": 4,
+              "label": "A project is **in a nice spot**, and the next tick moves on, whe"
+            },
+            {
+              "from": 169,
+              "to": 176,
+              "chars": 551,
+              "tokens": 133,
+              "charsPerToken": 4.14,
+              "label": "1. `npm run build` passes, and the build runs the project's own "
+            },
+            {
+              "from": 178,
+              "to": 179,
+              "chars": 102,
+              "tokens": 22,
+              "charsPerToken": 4.64,
+              "label": "Anything short of that and the next tick continues the same proj"
+            },
+            {
+              "from": 181,
+              "to": 181,
+              "chars": 71,
+              "tokens": 18,
+              "charsPerToken": 3.94,
+              "label": "3.3 Nothing enters the queue that cannot be built in a day of ti"
+            },
+            {
+              "from": 183,
+              "to": 185,
+              "chars": 183,
+              "tokens": 46,
+              "charsPerToken": 3.98,
+              "label": "D14's rule, restated because it still binds. A project larger th"
+            },
+            {
+              "from": 187,
+              "to": 187,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 189,
+              "to": 189,
+              "chars": 16,
+              "tokens": 5,
+              "charsPerToken": 3.2,
+              "label": "4. Publishing"
+            },
+            {
+              "from": 191,
+              "to": 193,
+              "chars": 221,
+              "tokens": 47,
+              "charsPerToken": 4.7,
+              "label": "**One project published every two days.** Between publications, "
+            },
+            {
+              "from": 195,
+              "to": 199,
+              "chars": 358,
+              "tokens": 92,
+              "charsPerToken": 3.89,
+              "label": "The release itself is `MAINTAIN-PROMPT.md` section 4 and `RELEAS"
+            },
+            {
+              "from": 201,
+              "to": 204,
+              "chars": 293,
+              "tokens": 70,
+              "charsPerToken": 4.19,
+              "label": "**The README is the marketing.** It is written for a recruiter w"
+            },
+            {
+              "from": 206,
+              "to": 206,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 208,
+              "to": 208,
+              "chars": 25,
+              "tokens": 7,
+              "charsPerToken": 3.57,
+              "label": "5. The auditor session"
+            },
+            {
+              "from": 210,
+              "to": 213,
+              "chars": 240,
+              "tokens": 61,
+              "charsPerToken": 3.93,
+              "label": "A second session, `broikos-github-ai-projects-auditor`, audits w"
+            },
+            {
+              "from": 215,
+              "to": 215,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "**The division, and it does not bend:**"
+            },
+            {
+              "from": 217,
+              "to": 220,
+              "chars": 258,
+              "tokens": 60,
+              "charsPerToken": 4.3,
+              "label": "- The auditor **reads, measures, drives a browser, and writes fi"
+            },
+            {
+              "from": 222,
+              "to": 226,
+              "chars": 376,
+              "tokens": 99,
+              "charsPerToken": 3.8,
+              "label": "**How a finding arrives.** The auditor writes one file per pass "
+            },
+            {
+              "from": 228,
+              "to": 231,
+              "chars": 288,
+              "tokens": 66,
+              "charsPerToken": 4.36,
+              "label": "**Disagreement is settled by measurement.** If a finding is wron"
+            },
+            {
+              "from": 233,
+              "to": 233,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 235,
+              "to": 235,
+              "chars": 29,
+              "tokens": 7,
+              "charsPerToken": 4.14,
+              "label": "6. Verification, unchanged"
+            },
+            {
+              "from": 237,
+              "to": 246,
+              "chars": 611,
+              "tokens": 154,
+              "charsPerToken": 3.97,
+              "label": "- Run the gates. Paste the real output."
+            },
+            {
+              "from": 248,
+              "to": 248,
+              "chars": 43,
+              "tokens": 11,
+              "charsPerToken": 3.91,
+              "label": "If a gate fails, the tick becomes the gate."
+            },
+            {
+              "from": 250,
+              "to": 250,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 252,
+              "to": 252,
+              "chars": 24,
+              "tokens": 8,
+              "charsPerToken": 3,
+              "label": "7. Write back, always"
+            },
+            {
+              "from": 254,
+              "to": 259,
+              "chars": 344,
+              "tokens": 93,
+              "charsPerToken": 3.7,
+              "label": "1. `DEVLOG.md`: one entry per tick. Shell timestamp, tick number"
+            },
+            {
+              "from": 261,
+              "to": 261,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 263,
+              "to": 263,
+              "chars": 11,
+              "tokens": 5,
+              "charsPerToken": 2.2,
+              "label": "8. Never"
+            },
+            {
+              "from": 265,
+              "to": 271,
+              "chars": 345,
+              "tokens": 79,
+              "charsPerToken": 4.37,
+              "label": "- Never co-author a commit."
+            },
+            {
+              "from": 273,
+              "to": 273,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 275,
+              "to": 275,
+              "chars": 21,
+              "tokens": 7,
+              "charsPerToken": 3,
+              "label": "9. The tick report"
+            },
+            {
+              "from": 277,
+              "to": 277,
+              "chars": 18,
+              "tokens": 4,
+              "charsPerToken": 4.5,
+              "label": "Six lines maximum."
+            },
+            {
+              "from": 279,
+              "to": 288,
+              "chars": 342,
+              "tokens": 83,
+              "charsPerToken": 4.12,
+              "label": "```"
+            },
+            {
+              "from": 290,
+              "to": 292,
+              "chars": 213,
+              "tokens": 51,
+              "charsPerToken": 4.18,
+              "label": "Six lines maximum, so this is what to compress **into** six line"
+            },
+            {
+              "from": 294,
+              "to": 294,
+              "chars": 49,
+              "tokens": 13,
+              "charsPerToken": 3.77,
+              "label": "10. The price table this run is costed against"
+            },
+            {
+              "from": 296,
+              "to": 296,
+              "chars": 69,
+              "tokens": 16,
+              "charsPerToken": 4.31,
+              "label": "Pasted in whole, the way a tool schema or a retrieved record arr"
+            },
+            {
+              "from": 298,
+              "to": 314,
+              "chars": 1455,
+              "tokens": 535,
+              "charsPerToken": 2.72,
+              "label": "```json"
+            }
+          ],
+          "spread": {
+            "regions": 81,
+            "low": 2.2,
+            "p5": 3,
+            "p25": 3.2,
+            "median": 3.9,
+            "p75": 4.29,
+            "p95": 4.61,
+            "high": 4.9,
+            "band": 1.54,
+            "fullRange": 2.23,
+            "outside": 8
+          }
+        },
+        "line": {
+          "regions": [
+            {
+              "from": 0,
+              "to": 0,
+              "chars": 24,
+              "tokens": 7,
+              "charsPerToken": 3.43,
+              "label": "The build contract, v3"
+            },
+            {
+              "from": 2,
+              "to": 2,
+              "chars": 82,
+              "tokens": 27,
+              "charsPerToken": 3.04,
+              "label": "> Supersedes `LOOP-PROMPT.md` for anything not yet published. `M"
+            },
+            {
+              "from": 3,
+              "to": 3,
+              "chars": 78,
+              "tokens": 16,
+              "charsPerToken": 4.88,
+              "label": "> still governs a project that is public: the moment a repositor"
+            },
+            {
+              "from": 4,
+              "to": 4,
+              "chars": 59,
+              "tokens": 14,
+              "charsPerToken": 4.21,
+              "label": "> file takes over for it and this one stops applying to it."
+            },
+            {
+              "from": 6,
+              "to": 6,
+              "chars": 52,
+              "tokens": 15,
+              "charsPerToken": 3.47,
+              "label": "Every **30 minutes**. One tick, one task, one entry."
+            },
+            {
+              "from": 8,
+              "to": 8,
+              "chars": 80,
+              "tokens": 16,
+              "charsPerToken": 5,
+              "label": "The instruction this file exists to carry out: build every proje"
+            },
+            {
+              "from": 9,
+              "to": 9,
+              "chars": 78,
+              "tokens": 16,
+              "charsPerToken": 4.88,
+              "label": "then optimise and fix them, then audit them on rotation, and pub"
+            },
+            {
+              "from": 10,
+              "to": 10,
+              "chars": 41,
+              "tokens": 8,
+              "charsPerToken": 5.13,
+              "label": "two days with progress pushes in between."
+            },
+            {
+              "from": 12,
+              "to": 12,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 14,
+              "to": 14,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "0. Who you are this tick"
+            },
+            {
+              "from": 16,
+              "to": 16,
+              "chars": 79,
+              "tokens": 15,
+              "charsPerToken": 5.27,
+              "label": "The code is the portfolio. Every file will be read by somebody d"
+            },
+            {
+              "from": 17,
+              "to": 17,
+              "chars": 78,
+              "tokens": 19,
+              "charsPerToken": 4.11,
+              "label": "to hire the person who wrote it, so it is written to be read: th"
+            },
+            {
+              "from": 18,
+              "to": 18,
+              "chars": 76,
+              "tokens": 17,
+              "charsPerToken": 4.47,
+              "label": "why, not what; the commit message says what was wrong, what chan"
+            },
+            {
+              "from": 19,
+              "to": 19,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "proves it; the README leads with the claim and the picture and p"
+            },
+            {
+              "from": 20,
+              "to": 20,
+              "chars": 36,
+              "tokens": 8,
+              "charsPerToken": 4.5,
+              "label": "underneath for the people who check."
+            },
+            {
+              "from": 22,
+              "to": 22,
+              "chars": 74,
+              "tokens": 17,
+              "charsPerToken": 4.35,
+              "label": "Methodical, not fast. A project that builds and lies is worth le"
+            },
+            {
+              "from": 23,
+              "to": 23,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "project. **Every number on a page is produced by a command in it"
+            },
+            {
+              "from": 24,
+              "to": 24,
+              "chars": 80,
+              "tokens": 16,
+              "charsPerToken": 5,
+              "label": "and where that is impossible the number is pinned with the file "
+            },
+            {
+              "from": 25,
+              "to": 25,
+              "chars": 17,
+              "tokens": 5,
+              "charsPerToken": 3.4,
+              "label": "that file's hash."
+            },
+            {
+              "from": 27,
+              "to": 27,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "You are the only author. Nobody is co-credited and no tool is na"
+            },
+            {
+              "from": 29,
+              "to": 29,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 31,
+              "to": 31,
+              "chars": 38,
+              "tokens": 10,
+              "charsPerToken": 3.8,
+              "label": "1. Every tick, before anything else"
+            },
+            {
+              "from": 33,
+              "to": 33,
+              "chars": 70,
+              "tokens": 19,
+              "charsPerToken": 3.68,
+              "label": "1. `state/state.json`: the queue, the open findings, whose turn "
+            },
+            {
+              "from": 34,
+              "to": 34,
+              "chars": 36,
+              "tokens": 13,
+              "charsPerToken": 2.77,
+              "label": "2. The last 40 lines of `DEVLOG.md`."
+            },
+            {
+              "from": 35,
+              "to": 35,
+              "chars": 40,
+              "tokens": 16,
+              "charsPerToken": 2.5,
+              "label": "3. `DECISIONS.md` and `RELEASE-PLAN.md`."
+            },
+            {
+              "from": 36,
+              "to": 36,
+              "chars": 81,
+              "tokens": 21,
+              "charsPerToken": 3.86,
+              "label": "4. **`audits/inbox/`**, for anything the auditor session has fil"
+            },
+            {
+              "from": 37,
+              "to": 37,
+              "chars": 23,
+              "tokens": 8,
+              "charsPerToken": 2.88,
+              "label": "tick. See section 5."
+            },
+            {
+              "from": 38,
+              "to": 38,
+              "chars": 74,
+              "tokens": 16,
+              "charsPerToken": 4.63,
+              "label": "5. The live deploy status of every published project, via the Ac"
+            },
+            {
+              "from": 40,
+              "to": 40,
+              "chars": 45,
+              "tokens": 11,
+              "charsPerToken": 4.09,
+              "label": "Take the time from the shell. Never infer it."
+            },
+            {
+              "from": 42,
+              "to": 42,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 44,
+              "to": 44,
+              "chars": 27,
+              "tokens": 8,
+              "charsPerToken": 3.38,
+              "label": "2. Pick exactly one task"
+            },
+            {
+              "from": 46,
+              "to": 46,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "Walk the ladder, stop at the first hit."
+            },
+            {
+              "from": 48,
+              "to": 48,
+              "chars": 80,
+              "tokens": 19,
+              "charsPerToken": 4.21,
+              "label": "1. **A published page is broken, or its last deploy failed.** No"
+            },
+            {
+              "from": 49,
+              "to": 49,
+              "chars": 52,
+              "tokens": 10,
+              "charsPerToken": 5.2,
+              "label": "matters while something people can open is wrong."
+            },
+            {
+              "from": 50,
+              "to": 50,
+              "chars": 79,
+              "tokens": 22,
+              "charsPerToken": 3.59,
+              "label": "2. **A claim a repository cannot reproduce.** On a page, in a RE"
+            },
+            {
+              "from": 51,
+              "to": 51,
+              "chars": 43,
+              "tokens": 9,
+              "charsPerToken": 4.78,
+              "label": "text. Published first, then unpublished."
+            },
+            {
+              "from": 52,
+              "to": 52,
+              "chars": 69,
+              "tokens": 17,
+              "charsPerToken": 4.06,
+              "label": "3. **An open finding at `severity: high`**, published projects f"
+            },
+            {
+              "from": 53,
+              "to": 53,
+              "chars": 55,
+              "tokens": 18,
+              "charsPerToken": 3.06,
+              "label": "4. **The release, if one is due today.** See section 4."
+            },
+            {
+              "from": 54,
+              "to": 54,
+              "chars": 81,
+              "tokens": 21,
+              "charsPerToken": 3.86,
+              "label": "5. **The next project that does not exist yet**, in the order in"
+            },
+            {
+              "from": 55,
+              "to": 55,
+              "chars": 73,
+              "tokens": 20,
+              "charsPerToken": 3.65,
+              "label": "it until it reaches the standard in section 3.2, then stop and s"
+            },
+            {
+              "from": 56,
+              "to": 56,
+              "chars": 65,
+              "tokens": 17,
+              "charsPerToken": 3.82,
+              "label": "6. **An open finding at `severity: medium`**, oldest audit first"
+            },
+            {
+              "from": 57,
+              "to": 57,
+              "chars": 81,
+              "tokens": 20,
+              "charsPerToken": 4.05,
+              "label": "7. **An audit, on rotation**, once every project in the queue ha"
+            },
+            {
+              "from": 58,
+              "to": 58,
+              "chars": 53,
+              "tokens": 15,
+              "charsPerToken": 3.53,
+              "label": "perspective, one project, by hand, into `audits/`."
+            },
+            {
+              "from": 59,
+              "to": 59,
+              "chars": 49,
+              "tokens": 15,
+              "charsPerToken": 3.27,
+              "label": "8. **Nothing.** A one line noop entry. No commit."
+            },
+            {
+              "from": 61,
+              "to": 61,
+              "chars": 75,
+              "tokens": 16,
+              "charsPerToken": 4.69,
+              "label": "One task. A tick that does one thing completely beats a tick tha"
+            },
+            {
+              "from": 62,
+              "to": 62,
+              "chars": 6,
+              "tokens": 2,
+              "charsPerToken": 3,
+              "label": "three."
+            },
+            {
+              "from": 64,
+              "to": 64,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 66,
+              "to": 66,
+              "chars": 33,
+              "tokens": 11,
+              "charsPerToken": 3,
+              "label": "2b. What a tick has to contain"
+            },
+            {
+              "from": 68,
+              "to": 68,
+              "chars": 75,
+              "tokens": 19,
+              "charsPerToken": 3.95,
+              "label": "One task, done to the bottom. The tick is not the change; the ch"
+            },
+            {
+              "from": 69,
+              "to": 69,
+              "chars": 77,
+              "tokens": 19,
+              "charsPerToken": 4.05,
+              "label": "smallest part of it. A tick that edits a file, commits and stops"
+            },
+            {
+              "from": 70,
+              "to": 70,
+              "chars": 25,
+              "tokens": 6,
+              "charsPerToken": 4.17,
+              "label": "typing and left the work."
+            },
+            {
+              "from": 72,
+              "to": 72,
+              "chars": 60,
+              "tokens": 14,
+              "charsPerToken": 4.29,
+              "label": "Every tick carries all six of these, and the report says so."
+            },
+            {
+              "from": 74,
+              "to": 74,
+              "chars": 38,
+              "tokens": 9,
+              "charsPerToken": 4.22,
+              "label": "1. A measurement before the change"
+            },
+            {
+              "from": 76,
+              "to": 76,
+              "chars": 80,
+              "tokens": 18,
+              "charsPerToken": 4.44,
+              "label": "**No fix without a number first.** Reproduce the defect with a c"
+            },
+            {
+              "from": 77,
+              "to": 77,
+              "chars": 77,
+              "tokens": 17,
+              "charsPerToken": 4.53,
+              "label": "what it printed. If the defect cannot be reproduced, that is the"
+            },
+            {
+              "from": 78,
+              "to": 78,
+              "chars": 41,
+              "tokens": 9,
+              "charsPerToken": 4.56,
+              "label": "the tick becomes proving it is not there."
+            },
+            {
+              "from": 80,
+              "to": 80,
+              "chars": 76,
+              "tokens": 16,
+              "charsPerToken": 4.75,
+              "label": "This is the difference between the ticks in this devlog that hol"
+            },
+            {
+              "from": 81,
+              "to": 81,
+              "chars": 78,
+              "tokens": 21,
+              "charsPerToken": 3.71,
+              "label": "ones that had to be redone. \"The ramp is too dark\" produced an a"
+            },
+            {
+              "from": 82,
+              "to": 82,
+              "chars": 78,
+              "tokens": 24,
+              "charsPerToken": 3.25,
+              "label": "luminance runs 46 to 166 against a background of 6, and 40 again"
+            },
+            {
+              "from": 83,
+              "to": 83,
+              "chars": 38,
+              "tokens": 9,
+              "charsPerToken": 4.22,
+              "label": "curve\" produced a floor with a reason."
+            },
+            {
+              "from": 85,
+              "to": 85,
+              "chars": 34,
+              "tokens": 10,
+              "charsPerToken": 3.4,
+              "label": "2. The class, not the instance"
+            },
+            {
+              "from": 87,
+              "to": 87,
+              "chars": 79,
+              "tokens": 16,
+              "charsPerToken": 4.94,
+              "label": "Before committing, **search every project for the same shape** a"
+            },
+            {
+              "from": 88,
+              "to": 88,
+              "chars": 74,
+              "tokens": 14,
+              "charsPerToken": 5.29,
+              "label": "search found, including when it finds nothing. A defect that hap"
+            },
+            {
+              "from": 89,
+              "to": 89,
+              "chars": 73,
+              "tokens": 15,
+              "charsPerToken": 4.87,
+              "label": "happened because something allowed it, and that something is sti"
+            },
+            {
+              "from": 91,
+              "to": 91,
+              "chars": 77,
+              "tokens": 16,
+              "charsPerToken": 4.81,
+              "label": "Worked, every time it was done: one corrupted escape became a sc"
+            },
+            {
+              "from": 92,
+              "to": 92,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "four files and a gate; one stale queue entry became a sweep that"
+            },
+            {
+              "from": 93,
+              "to": 93,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "number in prose became a gate that reads three files. Skipped, i"
+            },
+            {
+              "from": 94,
+              "to": 94,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "tick: the same two findings were filed twice, two days apart, be"
+            },
+            {
+              "from": 95,
+              "to": 95,
+              "chars": 28,
+              "tokens": 6,
+              "charsPerToken": 4.67,
+              "label": "pair was fixed as instances."
+            },
+            {
+              "from": 97,
+              "to": 97,
+              "chars": 33,
+              "tokens": 9,
+              "charsPerToken": 3.67,
+              "label": "3. A gate whose control fails"
+            },
+            {
+              "from": 99,
+              "to": 99,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "Every fix ships with the gate that would have caught it, and the"
+            },
+            {
+              "from": 100,
+              "to": 100,
+              "chars": 62,
+              "tokens": 13,
+              "charsPerToken": 4.77,
+              "label": "the broken state restored, run, and its failure output pasted."
+            },
+            {
+              "from": 102,
+              "to": 102,
+              "chars": 77,
+              "tokens": 19,
+              "charsPerToken": 4.05,
+              "label": "**If the control passes, the gate is wrong.** It has never once "
+            },
+            {
+              "from": 103,
+              "to": 103,
+              "chars": 80,
+              "tokens": 16,
+              "charsPerToken": 5,
+              "label": "being right: the assertion measured a proxy, or its condition co"
+            },
+            {
+              "from": 104,
+              "to": 104,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "or the build had failed and the page under test was the fixed on"
+            },
+            {
+              "from": 105,
+              "to": 105,
+              "chars": 81,
+              "tokens": 16,
+              "charsPerToken": 5.06,
+              "label": "was a bare number that the document says somewhere else anyway. "
+            },
+            {
+              "from": 106,
+              "to": 106,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "control before believing it, and when it turns out wrong, the ti"
+            },
+            {
+              "from": 107,
+              "to": 107,
+              "chars": 34,
+              "tokens": 7,
+              "charsPerToken": 4.86,
+              "label": "the assertion rather than the fix."
+            },
+            {
+              "from": 109,
+              "to": 109,
+              "chars": 77,
+              "tokens": 18,
+              "charsPerToken": 4.28,
+              "label": "How often it has happened is a number this file used to state tw"
+            },
+            {
+              "from": 110,
+              "to": 110,
+              "chars": 75,
+              "tokens": 20,
+              "charsPerToken": 3.75,
+              "label": "times\" here and \"eight times\" in section 6, adding that every on"
+            },
+            {
+              "from": 111,
+              "to": 111,
+              "chars": 88,
+              "tokens": 24,
+              "charsPerToken": 3.67,
+              "label": "devlog. Neither was reproducible: `projects/agentscope, npm run "
+            },
+            {
+              "from": 112,
+              "to": 112,
+              "chars": 79,
+              "tokens": 16,
+              "charsPerToken": 4.94,
+              "label": "entries that record it, one of which says six of that day's cont"
+            },
+            {
+              "from": 113,
+              "to": 113,
+              "chars": 80,
+              "tokens": 15,
+              "charsPerToken": 5.33,
+              "label": "first, so the corpus supports anywhere from four to twelve again"
+            },
+            {
+              "from": 114,
+              "to": 114,
+              "chars": 80,
+              "tokens": 18,
+              "charsPerToken": 4.44,
+              "label": "had defined. Corrected at tick 104, by the tick whose own contro"
+            },
+            {
+              "from": 115,
+              "to": 115,
+              "chars": 81,
+              "tokens": 17,
+              "charsPerToken": 4.76,
+              "label": "a broken spec while it was being written. **Run the command rath"
+            },
+            {
+              "from": 116,
+              "to": 116,
+              "chars": 18,
+              "tokens": 5,
+              "charsPerToken": 3.6,
+              "label": "count from here.**"
+            },
+            {
+              "from": 118,
+              "to": 118,
+              "chars": 40,
+              "tokens": 9,
+              "charsPerToken": 4.44,
+              "label": "4. Something checked and found clean"
+            },
+            {
+              "from": 120,
+              "to": 120,
+              "chars": 80,
+              "tokens": 14,
+              "charsPerToken": 5.71,
+              "label": "Name one hypothesis the tick tested and killed, with the measure"
+            },
+            {
+              "from": 121,
+              "to": 121,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "it. A tick that reports only what it changed leaves nobody able "
+            },
+            {
+              "from": 122,
+              "to": 122,
+              "chars": 80,
+              "tokens": 18,
+              "charsPerToken": 4.44,
+              "label": "looked at, and the negative results in this devlog have twice sa"
+            },
+            {
+              "from": 123,
+              "to": 123,
+              "chars": 77,
+              "tokens": 18,
+              "charsPerToken": 4.28,
+              "label": "from a day of work: sharing one browser across the gates is not "
+            },
+            {
+              "from": 124,
+              "to": 124,
+              "chars": 35,
+              "tokens": 7,
+              "charsPerToken": 5,
+              "label": "cube peak does not include padding."
+            },
+            {
+              "from": 126,
+              "to": 126,
+              "chars": 17,
+              "tokens": 6,
+              "charsPerToken": 2.83,
+              "label": "5. The reader"
+            },
+            {
+              "from": 128,
+              "to": 128,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "Every tick asks what a visitor or a recruiter now sees that they"
+            },
+            {
+              "from": 129,
+              "to": 129,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "and answers it in one line, or says plainly that this tick was i"
+            },
+            {
+              "from": 130,
+              "to": 130,
+              "chars": 78,
+              "tokens": 20,
+              "charsPerToken": 3.9,
+              "label": "and why that was still the right thing to do. **The code is the "
+            },
+            {
+              "from": 131,
+              "to": 131,
+              "chars": 53,
+              "tokens": 12,
+              "charsPerToken": 4.42,
+              "label": "week of invisible ticks is a week that does not show."
+            },
+            {
+              "from": 133,
+              "to": 133,
+              "chars": 27,
+              "tokens": 9,
+              "charsPerToken": 3,
+              "label": "6. The next task, named"
+            },
+            {
+              "from": 135,
+              "to": 135,
+              "chars": 78,
+              "tokens": 18,
+              "charsPerToken": 4.33,
+              "label": "End by naming the next tick's task and the reason it is next, so"
+            },
+            {
+              "from": 136,
+              "to": 136,
+              "chars": 54,
+              "tokens": 12,
+              "charsPerToken": 4.5,
+              "label": "tick starts from a decision rather than from a reread."
+            },
+            {
+              "from": 138,
+              "to": 138,
+              "chars": 28,
+              "tokens": 7,
+              "charsPerToken": 4,
+              "label": "What makes a tick a noop"
+            },
+            {
+              "from": 140,
+              "to": 140,
+              "chars": 80,
+              "tokens": 19,
+              "charsPerToken": 4.21,
+              "label": "Nothing on the ladder, or the one thing on it is blocked and the"
+            },
+            {
+              "from": 141,
+              "to": 141,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "A noop is one line and no commit. **A tick that produced no meas"
+            },
+            {
+              "from": 142,
+              "to": 142,
+              "chars": 32,
+              "tokens": 8,
+              "charsPerToken": 4,
+              "label": "noop that has not admitted it.**"
+            },
+            {
+              "from": 144,
+              "to": 144,
+              "chars": 18,
+              "tokens": 6,
+              "charsPerToken": 3,
+              "label": "3. The projects"
+            },
+            {
+              "from": 146,
+              "to": 146,
+              "chars": 17,
+              "tokens": 7,
+              "charsPerToken": 2.43,
+              "label": "3.1 The order"
+            },
+            {
+              "from": 148,
+              "to": 148,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "From D15, unchanged, because the reasoning behind it has not cha"
+            },
+            {
+              "from": 149,
+              "to": 149,
+              "chars": 78,
+              "tokens": 15,
+              "charsPerToken": 5.2,
+              "label": "buildable from what already exists go first, and the one needing"
+            },
+            {
+              "from": 150,
+              "to": 150,
+              "chars": 72,
+              "tokens": 17,
+              "charsPerToken": 4.24,
+              "label": "run goes late enough that the run can happen on a day it does no"
+            },
+            {
+              "from": 152,
+              "to": 152,
+              "chars": 37,
+              "tokens": 12,
+              "charsPerToken": 3.08,
+              "label": "| # | project | what it is | reuses |"
+            },
+            {
+              "from": 153,
+              "to": 153,
+              "chars": 17,
+              "tokens": 9,
+              "charsPerToken": 1.89,
+              "label": "|---|---|---|---|"
+            },
+            {
+              "from": 154,
+              "to": 154,
+              "chars": 133,
+              "tokens": 35,
+              "charsPerToken": 3.8,
+              "label": "| 1 | `chunkline` | the same passage chunked in English and Gree"
+            },
+            {
+              "from": 155,
+              "to": 155,
+              "chars": 158,
+              "tokens": 41,
+              "charsPerToken": 3.85,
+              "label": "| 2 | `agentscope` | a failure taxonomy of agent runs, each mode"
+            },
+            {
+              "from": 156,
+              "to": 156,
+              "chars": 128,
+              "tokens": 34,
+              "charsPerToken": 3.76,
+              "label": "| 3 | `evalkit` | an evaluation runner that refuses to report a "
+            },
+            {
+              "from": 157,
+              "to": 157,
+              "chars": 126,
+              "tokens": 30,
+              "charsPerToken": 4.2,
+              "label": "| 4 | `gatewaylab` | what providers really do under load, measur"
+            },
+            {
+              "from": 158,
+              "to": 158,
+              "chars": 94,
+              "tokens": 29,
+              "charsPerToken": 3.24,
+              "label": "| 5 | `promptcost` | a cost heatmap over a prompt | `tokenlab`'s"
+            },
+            {
+              "from": 159,
+              "to": 159,
+              "chars": 129,
+              "tokens": 38,
+              "charsPerToken": 3.39,
+              "label": "| 6 | `retrievalbench` | `chunkline` stage two: in browser embed"
+            },
+            {
+              "from": 161,
+              "to": 161,
+              "chars": 79,
+              "tokens": 21,
+              "charsPerToken": 3.76,
+              "label": "Specifications live in `specs/`. `chunkline`'s is written, measu"
+            },
+            {
+              "from": 162,
+              "to": 162,
+              "chars": 73,
+              "tokens": 15,
+              "charsPerToken": 4.87,
+              "label": "The rest are written the tick before that project is started, no"
+            },
+            {
+              "from": 164,
+              "to": 164,
+              "chars": 46,
+              "tokens": 13,
+              "charsPerToken": 3.54,
+              "label": "3.2 When a project is done enough to leave"
+            },
+            {
+              "from": 166,
+              "to": 166,
+              "chars": 78,
+              "tokens": 20,
+              "charsPerToken": 3.9,
+              "label": "A project is **in a nice spot**, and the next tick moves on, whe"
+            },
+            {
+              "from": 167,
+              "to": 167,
+              "chars": 41,
+              "tokens": 9,
+              "charsPerToken": 4.56,
+              "label": "are true and the tick says so explicitly:"
+            },
+            {
+              "from": 169,
+              "to": 169,
+              "chars": 70,
+              "tokens": 18,
+              "charsPerToken": 3.89,
+              "label": "1. `npm run build` passes, and the build runs the project's own "
+            },
+            {
+              "from": 170,
+              "to": 170,
+              "chars": 76,
+              "tokens": 17,
+              "charsPerToken": 4.47,
+              "label": "2. Every number in its README is produced by a command in the re"
+            },
+            {
+              "from": 171,
+              "to": 171,
+              "chars": 47,
+              "tokens": 11,
+              "charsPerToken": 4.27,
+              "label": "pinned with provenance, and a gate holds it."
+            },
+            {
+              "from": 172,
+              "to": 172,
+              "chars": 74,
+              "tokens": 24,
+              "charsPerToken": 3.08,
+              "label": "3. It has been **looked at in a real browser at 1280 and at 390*"
+            },
+            {
+              "from": 173,
+              "to": 173,
+              "chars": 57,
+              "tokens": 10,
+              "charsPerToken": 5.7,
+              "label": "screenshot has been examined rather than merely taken."
+            },
+            {
+              "from": 174,
+              "to": 174,
+              "chars": 70,
+              "tokens": 17,
+              "charsPerToken": 4.12,
+              "label": "4. The README leads with the claim, then the picture, then the m"
+            },
+            {
+              "from": 175,
+              "to": 175,
+              "chars": 80,
+              "tokens": 17,
+              "charsPerToken": 4.71,
+              "label": "5. There is at least one gate that would have caught the defect "
+            },
+            {
+              "from": 176,
+              "to": 176,
+              "chars": 70,
+              "tokens": 16,
+              "charsPerToken": 4.38,
+              "label": "plausibly ships with, and that gate has a control proving it bit"
+            },
+            {
+              "from": 178,
+              "to": 178,
+              "chars": 78,
+              "tokens": 15,
+              "charsPerToken": 5.2,
+              "label": "Anything short of that and the next tick continues the same proj"
+            },
+            {
+              "from": 179,
+              "to": 179,
+              "chars": 23,
+              "tokens": 6,
+              "charsPerToken": 3.83,
+              "label": "of the five is missing."
+            },
+            {
+              "from": 181,
+              "to": 181,
+              "chars": 71,
+              "tokens": 18,
+              "charsPerToken": 3.94,
+              "label": "3.3 Nothing enters the queue that cannot be built in a day of ti"
+            },
+            {
+              "from": 183,
+              "to": 183,
+              "chars": 74,
+              "tokens": 18,
+              "charsPerToken": 4.11,
+              "label": "D14's rule, restated because it still binds. A project larger th"
+            },
+            {
+              "from": 184,
+              "to": 184,
+              "chars": 81,
+              "tokens": 19,
+              "charsPerToken": 4.26,
+              "label": "decomposed into stages that each stand alone: its own claim, its"
+            },
+            {
+              "from": 185,
+              "to": 185,
+              "chars": 26,
+              "tokens": 7,
+              "charsPerToken": 3.71,
+              "label": "own number, its own gates."
+            },
+            {
+              "from": 187,
+              "to": 187,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 189,
+              "to": 189,
+              "chars": 16,
+              "tokens": 5,
+              "charsPerToken": 3.2,
+              "label": "4. Publishing"
+            },
+            {
+              "from": 191,
+              "to": 191,
+              "chars": 80,
+              "tokens": 15,
+              "charsPerToken": 5.33,
+              "label": "**One project published every two days.** Between publications, "
+            },
+            {
+              "from": 192,
+              "to": 192,
+              "chars": 76,
+              "tokens": 14,
+              "charsPerToken": 5.43,
+              "label": "whatever is already public so the profile shows work happening: "
+            },
+            {
+              "from": 193,
+              "to": 193,
+              "chars": 63,
+              "tokens": 16,
+              "charsPerToken": 3.94,
+              "label": "pushes a day, each one a coherent piece, never an empty commit."
+            },
+            {
+              "from": 195,
+              "to": 195,
+              "chars": 74,
+              "tokens": 24,
+              "charsPerToken": 3.08,
+              "label": "The release itself is `MAINTAIN-PROMPT.md` section 4 and `RELEAS"
+            },
+            {
+              "from": 196,
+              "to": 196,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "steps 1 to 5, unchanged: the repository is created with its desc"
+            },
+            {
+              "from": 197,
+              "to": 197,
+              "chars": 75,
+              "tokens": 17,
+              "charsPerToken": 4.41,
+              "label": "and homepage already written in `docs/PUBLISH.md`, `main` carrie"
+            },
+            {
+              "from": 198,
+              "to": 198,
+              "chars": 81,
+              "tokens": 19,
+              "charsPerToken": 4.26,
+              "label": "history, Pages goes on, the live URL is verified **in a browser*"
+            },
+            {
+              "from": 199,
+              "to": 199,
+              "chars": 45,
+              "tokens": 11,
+              "charsPerToken": 4.09,
+              "label": "and last push of that day adds the live link."
+            },
+            {
+              "from": 201,
+              "to": 201,
+              "chars": 79,
+              "tokens": 18,
+              "charsPerToken": 4.39,
+              "label": "**The README is the marketing.** It is written for a recruiter w"
+            },
+            {
+              "from": 202,
+              "to": 202,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "seconds, then for an engineer who gives it two minutes, then for"
+            },
+            {
+              "from": 203,
+              "to": 203,
+              "chars": 78,
+              "tokens": 20,
+              "charsPerToken": 3.9,
+              "label": "gives it half an hour, in that order and in that layout. The cla"
+            },
+            {
+              "from": 204,
+              "to": 204,
+              "chars": 54,
+              "tokens": 12,
+              "charsPerToken": 4.5,
+              "label": "picture, the one number that matters, then the method."
+            },
+            {
+              "from": 206,
+              "to": 206,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 208,
+              "to": 208,
+              "chars": 25,
+              "tokens": 7,
+              "charsPerToken": 3.57,
+              "label": "5. The auditor session"
+            },
+            {
+              "from": 210,
+              "to": 210,
+              "chars": 76,
+              "tokens": 20,
+              "charsPerToken": 3.8,
+              "label": "A second session, `broikos-github-ai-projects-auditor`, audits w"
+            },
+            {
+              "from": 211,
+              "to": 211,
+              "chars": 78,
+              "tokens": 19,
+              "charsPerToken": 4.11,
+              "label": "builds. It is a separate pair of eyes on purpose: this session i"
+            },
+            {
+              "from": 212,
+              "to": 212,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "the code it just wrote to see it, and every audit in this worksp"
+            },
+            {
+              "from": 213,
+              "to": 213,
+              "chars": 5,
+              "tokens": 2,
+              "charsPerToken": 2.5,
+              "label": "that."
+            },
+            {
+              "from": 215,
+              "to": 215,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "**The division, and it does not bend:**"
+            },
+            {
+              "from": 217,
+              "to": 217,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "- The auditor **reads, measures, drives a browser, and writes fi"
+            },
+            {
+              "from": 218,
+              "to": 218,
+              "chars": 53,
+              "tokens": 12,
+              "charsPerToken": 4.42,
+              "label": "never edits a project, never commits, never pushes."
+            },
+            {
+              "from": 219,
+              "to": 219,
+              "chars": 75,
+              "tokens": 17,
+              "charsPerToken": 4.41,
+              "label": "- This session **fixes**, and every fix ships with the gate that"
+            },
+            {
+              "from": 220,
+              "to": 220,
+              "chars": 51,
+              "tokens": 11,
+              "charsPerToken": 4.64,
+              "label": "caught it plus a control proving that gate bites."
+            },
+            {
+              "from": 222,
+              "to": 222,
+              "chars": 68,
+              "tokens": 15,
+              "charsPerToken": 4.53,
+              "label": "**How a finding arrives.** The auditor writes one file per pass "
+            },
+            {
+              "from": 223,
+              "to": 223,
+              "chars": 66,
+              "tokens": 21,
+              "charsPerToken": 3.14,
+              "label": "`audits/inbox/<project>-<date>-<perspective>.md`, in the format "
+            },
+            {
+              "from": 224,
+              "to": 224,
+              "chars": 80,
+              "tokens": 21,
+              "charsPerToken": 3.81,
+              "label": "`audits/AUDIT-BRIEF.md`, and messages this session with the verd"
+            },
+            {
+              "from": 225,
+              "to": 225,
+              "chars": 79,
+              "tokens": 17,
+              "charsPerToken": 4.65,
+              "label": "count by severity. This session reads the inbox at the top of ev"
+            },
+            {
+              "from": 226,
+              "to": 226,
+              "chars": 79,
+              "tokens": 21,
+              "charsPerToken": 3.76,
+              "label": "the findings into `state/state.json` as tasks, and moves the fil"
+            },
+            {
+              "from": 228,
+              "to": 228,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "**Disagreement is settled by measurement.** If a finding is wron"
+            },
+            {
+              "from": 229,
+              "to": 229,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "with the command that shows it is wrong, in the devlog, and the "
+            },
+            {
+              "from": 230,
+              "to": 230,
+              "chars": 73,
+              "tokens": 14,
+              "charsPerToken": 5.21,
+              "label": "Five entries in the queue turned out stale on 23 September becau"
+            },
+            {
+              "from": 231,
+              "to": 231,
+              "chars": 51,
+              "tokens": 12,
+              "charsPerToken": 4.25,
+              "label": "checked; the fix for that is checking, not arguing."
+            },
+            {
+              "from": 233,
+              "to": 233,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 235,
+              "to": 235,
+              "chars": 29,
+              "tokens": 7,
+              "charsPerToken": 4.14,
+              "label": "6. Verification, unchanged"
+            },
+            {
+              "from": 237,
+              "to": 237,
+              "chars": 39,
+              "tokens": 10,
+              "charsPerToken": 3.9,
+              "label": "- Run the gates. Paste the real output."
+            },
+            {
+              "from": 238,
+              "to": 238,
+              "chars": 63,
+              "tokens": 20,
+              "charsPerToken": 3.15,
+              "label": "- Anything visual: look at it in a browser, at 1280 and at 390."
+            },
+            {
+              "from": 239,
+              "to": 239,
+              "chars": 77,
+              "tokens": 18,
+              "charsPerToken": 4.28,
+              "label": "- A bug fix: reproduce the failure first with the exact input, t"
+            },
+            {
+              "from": 240,
+              "to": 240,
+              "chars": 25,
+              "tokens": 7,
+              "charsPerToken": 3.57,
+              "label": "re-run that same input."
+            },
+            {
+              "from": 241,
+              "to": 241,
+              "chars": 78,
+              "tokens": 17,
+              "charsPerToken": 4.59,
+              "label": "- Every fix ships with the gate that would have caught it, and t"
+            },
+            {
+              "from": 242,
+              "to": 242,
+              "chars": 43,
+              "tokens": 9,
+              "charsPerToken": 4.78,
+              "label": "with a negative control proving it bites."
+            },
+            {
+              "from": 243,
+              "to": 243,
+              "chars": 81,
+              "tokens": 18,
+              "charsPerToken": 4.5,
+              "label": "- **A control that passes against the broken code is worse than "
+            },
+            {
+              "from": 244,
+              "to": 244,
+              "chars": 90,
+              "tokens": 24,
+              "charsPerToken": 3.75,
+              "label": "entries that record it are what `projects/agentscope, npm run bu"
+            },
+            {
+              "from": 245,
+              "to": 245,
+              "chars": 81,
+              "tokens": 20,
+              "charsPerToken": 4.05,
+              "label": "section 2b says why the count is not written here. If a control "
+            },
+            {
+              "from": 246,
+              "to": 246,
+              "chars": 25,
+              "tokens": 6,
+              "charsPerToken": 4.17,
+              "label": "it before believing it."
+            },
+            {
+              "from": 248,
+              "to": 248,
+              "chars": 43,
+              "tokens": 11,
+              "charsPerToken": 3.91,
+              "label": "If a gate fails, the tick becomes the gate."
+            },
+            {
+              "from": 250,
+              "to": 250,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 252,
+              "to": 252,
+              "chars": 24,
+              "tokens": 8,
+              "charsPerToken": 3,
+              "label": "7. Write back, always"
+            },
+            {
+              "from": 254,
+              "to": 254,
+              "chars": 80,
+              "tokens": 22,
+              "charsPerToken": 3.64,
+              "label": "1. `DEVLOG.md`: one entry per tick. Shell timestamp, tick number"
+            },
+            {
+              "from": 255,
+              "to": 255,
+              "chars": 70,
+              "tokens": 19,
+              "charsPerToken": 3.68,
+              "label": "changed, the output that proves it, and which of section 3.2's f"
+            },
+            {
+              "from": 256,
+              "to": 256,
+              "chars": 38,
+              "tokens": 7,
+              "charsPerToken": 5.43,
+              "label": "conditions the project still fails."
+            },
+            {
+              "from": 257,
+              "to": 257,
+              "chars": 77,
+              "tokens": 19,
+              "charsPerToken": 4.05,
+              "label": "2. `state/state.json`: findings closed with the tick that closed"
+            },
+            {
+              "from": 258,
+              "to": 258,
+              "chars": 30,
+              "tokens": 9,
+              "charsPerToken": 3.33,
+              "label": "incremented, `updated` set."
+            },
+            {
+              "from": 259,
+              "to": 259,
+              "chars": 44,
+              "tokens": 15,
+              "charsPerToken": 2.93,
+              "label": "3. `DECISIONS.md`: only if a fork was taken."
+            },
+            {
+              "from": 261,
+              "to": 261,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 263,
+              "to": 263,
+              "chars": 11,
+              "tokens": 5,
+              "charsPerToken": 2.2,
+              "label": "8. Never"
+            },
+            {
+              "from": 265,
+              "to": 265,
+              "chars": 27,
+              "tokens": 7,
+              "charsPerToken": 3.86,
+              "label": "- Never co-author a commit."
+            },
+            {
+              "from": 266,
+              "to": 266,
+              "chars": 59,
+              "tokens": 12,
+              "charsPerToken": 4.92,
+              "label": "- Never write a number into prose that no command produces."
+            },
+            {
+              "from": 267,
+              "to": 267,
+              "chars": 58,
+              "tokens": 14,
+              "charsPerToken": 4.14,
+              "label": "- Never leave the working tree dirty at the end of a tick."
+            },
+            {
+              "from": 268,
+              "to": 268,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "- Never use dashes as punctuation, and never emojis, in any file"
+            },
+            {
+              "from": 269,
+              "to": 269,
+              "chars": 26,
+              "tokens": 7,
+              "charsPerToken": 3.71,
+              "label": "- Never force push `main`."
+            },
+            {
+              "from": 270,
+              "to": 270,
+              "chars": 79,
+              "tokens": 16,
+              "charsPerToken": 4.94,
+              "label": "- Never let the auditor edit a project, and never fix a finding "
+            },
+            {
+              "from": 271,
+              "to": 271,
+              "chars": 14,
+              "tokens": 4,
+              "charsPerToken": 3.5,
+              "label": "the finding."
+            },
+            {
+              "from": 273,
+              "to": 273,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "---"
+            },
+            {
+              "from": 275,
+              "to": 275,
+              "chars": 21,
+              "tokens": 7,
+              "charsPerToken": 3,
+              "label": "9. The tick report"
+            },
+            {
+              "from": 277,
+              "to": 277,
+              "chars": 18,
+              "tokens": 4,
+              "charsPerToken": 4.5,
+              "label": "Six lines maximum."
+            },
+            {
+              "from": 279,
+              "to": 279,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "```"
+            },
+            {
+              "from": 280,
+              "to": 280,
+              "chars": 39,
+              "tokens": 9,
+              "charsPerToken": 4.33,
+              "label": "tick N | project | ladder item and task"
+            },
+            {
+              "from": 281,
+              "to": 281,
+              "chars": 39,
+              "tokens": 8,
+              "charsPerToken": 4.88,
+              "label": "what it measured first, with the number"
+            },
+            {
+              "from": 282,
+              "to": 282,
+              "chars": 57,
+              "tokens": 12,
+              "charsPerToken": 4.75,
+              "label": "what changed, and what the sweep for the same shape found"
+            },
+            {
+              "from": 283,
+              "to": 283,
+              "chars": 28,
+              "tokens": 5,
+              "charsPerToken": 5.6,
+              "label": "the control's failure output"
+            },
+            {
+              "from": 284,
+              "to": 284,
+              "chars": 32,
+              "tokens": 6,
+              "charsPerToken": 5.33,
+              "label": "what was checked and found clean"
+            },
+            {
+              "from": 285,
+              "to": 285,
+              "chars": 62,
+              "tokens": 14,
+              "charsPerToken": 4.43,
+              "label": "what a reader sees now, or why this tick was invisible to them"
+            },
+            {
+              "from": 286,
+              "to": 286,
+              "chars": 41,
+              "tokens": 10,
+              "charsPerToken": 4.1,
+              "label": "which of the five it still fails, or none"
+            },
+            {
+              "from": 287,
+              "to": 287,
+              "chars": 29,
+              "tokens": 8,
+              "charsPerToken": 3.63,
+              "label": "next tick, and why it is next"
+            },
+            {
+              "from": 288,
+              "to": 288,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "```"
+            },
+            {
+              "from": 290,
+              "to": 290,
+              "chars": 80,
+              "tokens": 20,
+              "charsPerToken": 4,
+              "label": "Six lines maximum, so this is what to compress **into** six line"
+            },
+            {
+              "from": 291,
+              "to": 291,
+              "chars": 76,
+              "tokens": 18,
+              "charsPerToken": 4.22,
+              "label": "print. If a tick cannot fill it, the tick was thin and the repor"
+            },
+            {
+              "from": 292,
+              "to": 292,
+              "chars": 55,
+              "tokens": 11,
+              "charsPerToken": 5,
+              "label": "which part is missing rather than leaving the line out."
+            },
+            {
+              "from": 294,
+              "to": 294,
+              "chars": 49,
+              "tokens": 13,
+              "charsPerToken": 3.77,
+              "label": "10. The price table this run is costed against"
+            },
+            {
+              "from": 296,
+              "to": 296,
+              "chars": 69,
+              "tokens": 16,
+              "charsPerToken": 4.31,
+              "label": "Pasted in whole, the way a tool schema or a retrieved record arr"
+            },
+            {
+              "from": 298,
+              "to": 298,
+              "chars": 7,
+              "tokens": 2,
+              "charsPerToken": 3.5,
+              "label": "```json"
+            },
+            {
+              "from": 299,
+              "to": 299,
+              "chars": 1,
+              "tokens": 1,
+              "charsPerToken": 1,
+              "label": "{"
+            },
+            {
+              "from": 300,
+              "to": 300,
+              "chars": 26,
+              "tokens": 12,
+              "charsPerToken": 2.17,
+              "label": "\"checked\": \"2026-09-20\","
+            },
+            {
+              "from": 301,
+              "to": 301,
+              "chars": 61,
+              "tokens": 16,
+              "charsPerToken": 3.81,
+              "label": "\"source\": \"https://developers.openai.com/api/docs/pricing\","
+            },
+            {
+              "from": 302,
+              "to": 302,
+              "chars": 322,
+              "tokens": 73,
+              "charsPerToken": 4.41,
+              "label": "\"note\": \"Standard tier, per million tokens, in US dollars. Batch"
+            },
+            {
+              "from": 303,
+              "to": 303,
+              "chars": 13,
+              "tokens": 5,
+              "charsPerToken": 2.6,
+              "label": "\"models\": ["
+            },
+            {
+              "from": 304,
+              "to": 304,
+              "chars": 129,
+              "tokens": 51,
+              "charsPerToken": 2.53,
+              "label": "{ \"id\": \"gpt-6-astra\", \"label\": \"GPT-6 Astra\", \"encoding\": \"o200"
+            },
+            {
+              "from": 305,
+              "to": 305,
+              "chars": 128,
+              "tokens": 54,
+              "charsPerToken": 2.37,
+              "label": "{ \"id\": \"gpt-5.6-sol\", \"label\": \"GPT-5.6 Sol\", \"encoding\": \"o200"
+            },
+            {
+              "from": 306,
+              "to": 306,
+              "chars": 132,
+              "tokens": 55,
+              "charsPerToken": 2.4,
+              "label": "{ \"id\": \"gpt-5.6-terra\", \"label\": \"GPT-5.6 Terra\", \"encoding\": \""
+            },
+            {
+              "from": 307,
+              "to": 307,
+              "chars": 129,
+              "tokens": 55,
+              "charsPerToken": 2.35,
+              "label": "{ \"id\": \"gpt-5.6-luna\", \"label\": \"GPT-5.6 Luna\", \"encoding\": \"o2"
+            },
+            {
+              "from": 308,
+              "to": 308,
+              "chars": 120,
+              "tokens": 52,
+              "charsPerToken": 2.31,
+              "label": "{ \"id\": \"gpt-5.5\", \"label\": \"GPT-5.5\", \"encoding\": \"o200k_base\","
+            },
+            {
+              "from": 309,
+              "to": 309,
+              "chars": 119,
+              "tokens": 52,
+              "charsPerToken": 2.29,
+              "label": "{ \"id\": \"gpt-4.1\", \"label\": \"GPT-4.1\", \"encoding\": \"o200k_base\","
+            },
+            {
+              "from": 310,
+              "to": 310,
+              "chars": 118,
+              "tokens": 50,
+              "charsPerToken": 2.36,
+              "label": "{ \"id\": \"gpt-4o\", \"label\": \"GPT-4o\", \"encoding\": \"o200k_base\", \""
+            },
+            {
+              "from": 311,
+              "to": 311,
+              "chars": 127,
+              "tokens": 52,
+              "charsPerToken": 2.44,
+              "label": "{ \"id\": \"gpt-4o-mini\", \"label\": \"GPT-4o mini\", \"encoding\": \"o200"
+            },
+            {
+              "from": 312,
+              "to": 312,
+              "chars": 3,
+              "tokens": 2,
+              "charsPerToken": 1.5,
+              "label": "]"
+            },
+            {
+              "from": 313,
+              "to": 313,
+              "chars": 1,
+              "tokens": 1,
+              "charsPerToken": 1,
+              "label": "}"
+            },
+            {
+              "from": 314,
+              "to": 314,
+              "chars": 3,
+              "tokens": 1,
+              "charsPerToken": 3,
+              "label": "```"
+            }
+          ],
+          "spread": {
+            "regions": 235,
+            "low": 1,
+            "p5": 2.4,
+            "p25": 3.43,
+            "median": 4.09,
+            "p75": 4.5,
+            "p95": 5.2,
+            "high": 5.71,
+            "band": 2.17,
+            "fullRange": 5.71,
+            "outside": 22
+          }
+        }
+      }
+    }
+  ],
+  "verdict": {
+    "sectionBand": 1.18,
+    "sectionP5": 3.61,
+    "sectionP95": 4.25,
+    "lineBand": 1.73,
+    "lineP5": 3,
+    "lineP95": 5.2,
+    "grainGain": 1.47,
+    "control": {
+      "sectionBand": 1.52,
+      "lineBand": 2.17,
+      "sectionGain": 1.29,
+      "addedTokens": 566,
+      "addedChars": 1579,
+      "pastedCharsPerToken": 2.79
+    },
+    "cheapestLine": {
+      "from": 35,
+      "to": 35,
+      "chars": 40,
+      "tokens": 16,
+      "charsPerToken": 2.5,
+      "label": "3. `DECISIONS.md` and `RELEASE-PLAN.md`."
+    },
+    "dearestLine": {
+      "from": 120,
+      "to": 120,
+      "chars": 80,
+      "tokens": 14,
+      "charsPerToken": 5.71,
+      "label": "Name one hypothesis the tick tested and killed, with the measure"
+    },
+    "costs": [
+      {
+        "id": "gpt-6-astra",
+        "label": "GPT-6 Astra",
+        "inputPerMillion": 10,
+        "perSend": 0.0316,
+        "perDay": 1.515,
+        "perWindow": 45.46
+      },
+      {
+        "id": "gpt-5.6-sol",
+        "label": "GPT-5.6 Sol",
+        "inputPerMillion": 4,
+        "perSend": 0.0126,
+        "perDay": 0.606,
+        "perWindow": 18.18
+      },
+      {
+        "id": "gpt-5.6-terra",
+        "label": "GPT-5.6 Terra",
+        "inputPerMillion": 2,
+        "perSend": 0.0063,
+        "perDay": 0.303,
+        "perWindow": 9.09
+      },
+      {
+        "id": "gpt-5.6-luna",
+        "label": "GPT-5.6 Luna",
+        "inputPerMillion": 0.2,
+        "perSend": 0.0006,
+        "perDay": 0.03,
+        "perWindow": 0.91
+      },
+      {
+        "id": "gpt-5.5",
+        "label": "GPT-5.5",
+        "inputPerMillion": 5,
+        "perSend": 0.0158,
+        "perDay": 0.758,
+        "perWindow": 22.73
+      },
+      {
+        "id": "gpt-4.1",
+        "label": "GPT-4.1",
+        "inputPerMillion": 2,
+        "perSend": 0.0063,
+        "perDay": 0.303,
+        "perWindow": 9.09
+      },
+      {
+        "id": "gpt-4o",
+        "label": "GPT-4o",
+        "inputPerMillion": 2.5,
+        "perSend": 0.0079,
+        "perDay": 0.379,
+        "perWindow": 11.37
+      },
+      {
+        "id": "gpt-4o-mini",
+        "label": "GPT-4o mini",
+        "inputPerMillion": 0.15,
+        "perSend": 0.0005,
+        "perDay": 0.023,
+        "perWindow": 0.68
+      }
+    ],
+    "dearest": {
+      "id": "gpt-6-astra",
+      "label": "GPT-6 Astra",
+      "inputPerMillion": 10,
+      "perSend": 0.0316,
+      "perDay": 1.515,
+      "perWindow": 45.46
+    },
+    "cheapest": {
+      "id": "gpt-4o-mini",
+      "label": "GPT-4o mini",
+      "inputPerMillion": 0.15,
+      "perSend": 0.0005,
+      "perDay": 0.023,
+      "perWindow": 0.68
+    },
+    "modelSpread": 67
+  }
+}
