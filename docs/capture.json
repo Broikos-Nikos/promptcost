@@ -1,0 +1,14 @@
+{
+  "recorded": "2026-09-24",
+  "fps": 8,
+  "width": 880,
+  "crop": "crop=1280:904:0:0",
+  "seconds": 8.8,
+  "looked": {
+    "grain": "section",
+    "document": "contract-json",
+    "lines": 316,
+    "distinctColours": 13,
+    "readout": "13 regions at section grain, the grain a heatmap is always drawn at. The middle 90% of them run 2.79 to 4.25 characters a token, a spread of 1.52x. 1 region outside that band."
+  }
+}

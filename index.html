@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>promptcost: a heatmap over a prompt, and what it cannot show</title>
+    <meta
+      name="description"
+      content="A cost heatmap over a real system prompt is flat at the grain everyone draws it at. Measured: 1.18x at section grain, 1.73x at line grain, and the bill is the cadence, not the map."
+    />
+    <meta property="og:title" content="promptcost: a heatmap over a prompt, and what it cannot show" />
+    <meta
+      property="og:description"
+      content="The same prompt at three grains. Flat at section grain, 1.73x at line grain, and 67x between the cheapest and dearest model for the identical tokens."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0d12'/%3E%3Crect x='2' y='3' width='12' height='2' fill='%23f0a04b'/%3E%3Crect x='2' y='7' width='12' height='2' fill='%235b8fb9'/%3E%3Crect x='2' y='11' width='12' height='2' fill='%23e2564a'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <noscript>
+      <p class="noscript">
+        This page draws a measurement that is committed in the repository as
+        <code>src/generated/density.json</code>. Without JavaScript the numbers are still in that file, and in the README.
+      </p>
+    </noscript>
+
+    <header class="masthead">
+      <p class="eyebrow">promptcost</p>
+      <h1>
+        A cost heatmap over a prompt is <em>flat</em> at the grain everyone draws it at.
+        <span class="h1-second">The bill is how often you send it.</span>
+      </h1>
+      <p class="standfirst">
+        This is the prompt that built this repository, measured with the tokenizer the models use. Switch the grain and
+        watch the map appear: the structure is below the level a heatmap is usually pointed at, and what makes a line
+        expensive is its punctuation, not its subject.
+      </p>
+      <dl class="headline">
+        <div><dt>section grain</dt><dd id="kpi-section">&mdash;</dd><dd class="unit">spread across the map</dd></div>
+        <div><dt>line grain</dt><dd id="kpi-line">&mdash;</dd><dd class="unit">same document, same scale</dd></div>
+        <div class="hot"><dt>30 days of this prompt</dt><dd id="kpi-spread">&mdash;</dd><dd class="unit" id="kpi-spread-unit">between the dearest and cheapest model</dd></div>
+      </dl>
+    </header>
+
+    <main>
+      <section class="map" aria-labelledby="map-h">
+        <div class="map-head">
+          <h2 id="map-h">The map</h2>
+          <div class="controls">
+            <fieldset class="seg">
+              <legend>Grain</legend>
+              <div id="grain" class="seg-row" role="radiogroup" aria-label="Grain"></div>
+            </fieldset>
+            <fieldset class="seg">
+              <legend>Document</legend>
+              <div id="doc" class="seg-row" role="radiogroup" aria-label="Document"></div>
+            </fieldset>
+          </div>
+        </div>
+
+        <p class="readout" id="readout">&nbsp;</p>
+
+        <div class="legend" aria-hidden="true">
+          <span class="legend-end" id="legend-low"></span>
+          <span class="ramp"></span>
+          <span class="legend-end" id="legend-high"></span>
+        </div>
+        <p class="legend-note">
+          Colour is characters per token, the rate at which a region turns money into words on a screen.
+          <strong>Low is expensive:</strong> a hot line bought fewer characters for the tokens it cost.
+        </p>
+
+        <div class="paper" id="paper" role="img" aria-labelledby="map-h" aria-describedby="paper-alt"></div>
+        <p class="alt" id="paper-alt"></p>
+
+        <table class="worst">
+          <caption id="worst-caption">The extremes at this grain</caption>
+          <thead>
+            <tr><th scope="col">region</th><th scope="col">chars</th><th scope="col">tokens</th><th scope="col">chars/token</th></tr>
+          </thead>
+          <tbody id="worst"></tbody>
+        </table>
+      </section>
+
+      <section class="cadence" aria-labelledby="cadence-h">
+        <h2 id="cadence-h">The thing the map cannot show</h2>
+        <p class="lede">
+          Every region above is a share of one send. The bill is that share multiplied by a number that appears nowhere
+          on the map: how often the prompt goes out, and to which model.
+        </p>
+        <div class="dials">
+          <label class="dial">
+            <span class="dial-label">Model</span>
+            <select id="model"></select>
+          </label>
+          <label class="dial">
+            <span class="dial-label">Sends a day <output id="sends-out"></output></span>
+            <input id="sends" type="range" min="1" max="288" step="1" value="48" />
+          </label>
+          <label class="dial">
+            <span class="dial-label">Days <output id="days-out"></output></span>
+            <input id="days" type="range" min="1" max="90" step="1" value="30" />
+          </label>
+        </div>
+        <p class="bill">
+          <span class="bill-figure" id="bill">&mdash;</span>
+          <span class="bill-note" id="bill-note"></span>
+        </p>
+        <table class="prices">
+          <caption>Every model in the committed table, at the dials above</caption>
+          <thead>
+            <tr><th scope="col">model</th><th scope="col">input</th><th scope="col">per send</th><th scope="col">over the window</th></tr>
+          </thead>
+          <tbody id="prices"></tbody>
+        </table>
+      </section>
+
+      <section class="method" aria-labelledby="method-h">
+        <h2 id="method-h">Method</h2>
+        <p id="method-provenance"></p>
+        <p>
+          Both inputs are committed in <code>data/</code> and hashed into the measurement, because the contract is
+          edited every few ticks and a price list is stale the day after it is written. <code>npm run check:density</code>
+          recomputes every region from those files and refuses any disagreement;
+          <code>npm run check:grain</code> fails if the section grain stops being flat or the control stops lighting up,
+          which are claims about the world rather than about this code.
+        </p>
+        <p>
+          The second document is the first with this repository's own price table pasted in, composed by the builder
+          rather than written by hand. It is here because a flat map has two readings, a uniform document and a blind
+          instrument, and only one of them is a finding.
+        </p>
+        <p class="repo">
+          <a href="https://github.com/broikos-nikos/promptcost">Source, measurement and gates on GitHub</a>
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,508 @@
+/*
+ * Dark, because the map is the page and a ramp reads against ink rather than
+ * against paper. The one rule everything here follows: the document panel is
+ * the only saturated thing on the page, so the colour a reader sees is always
+ * the measurement and never the furniture.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --ink-0: #07090d;
+  --ink-1: #0b0d12;
+  --ink-2: #11141b;
+  --ink-3: #191d26;
+  --line: #242a36;
+
+  --paper: #eef1f6;
+  --dim: #a3abba;
+  --faint: #7c8494;
+
+  --cool: #406c96;
+  --warm: #e04236;
+  --accent: #f0a04b;
+
+  --wrap: 1180px;
+  --radius: 10px;
+
+  --fs-body: clamp(16px, 15px + 0.2vw, 18px);
+  --fs-mono: clamp(11px, 10.2px + 0.16vw, 13px);
+
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 clamp(16px, 4vw, 40px) 5rem;
+  background:
+    radial-gradient(70% 45% at 50% 0%, #131722 0%, transparent 70%),
+    var(--ink-0);
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+main,
+.masthead {
+  max-width: var(--wrap);
+  margin: 0 auto;
+}
+
+.noscript {
+  max-width: var(--wrap);
+  margin: 1rem auto 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink-2);
+  color: var(--dim);
+  font-size: 0.92em;
+}
+
+/* ---------- masthead ---------- */
+
+.masthead {
+  padding: clamp(2.5rem, 7vh, 5rem) 0 2.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.9rem;
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0 0 1.1rem;
+  max-width: 21ch;
+  font-size: clamp(2rem, 1.2rem + 3.4vw, 3.9rem);
+  line-height: 1.04;
+  letter-spacing: -0.024em;
+  font-weight: 650;
+}
+
+h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.h1-second {
+  display: block;
+  color: var(--dim);
+  font-weight: 450;
+}
+
+.standfirst {
+  margin: 0 0 2.2rem;
+  max-width: 62ch;
+  color: var(--dim);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.14rem);
+}
+
+.headline {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--line);
+  overflow: hidden;
+}
+
+.headline > div {
+  padding: 1.1rem 1.2rem 1.2rem;
+  background: var(--ink-1);
+}
+
+.headline dt {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.headline dd {
+  margin: 0.35rem 0 0;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.9rem, 1.4rem + 1.6vw, 2.7rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.headline .unit {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--faint);
+  letter-spacing: 0;
+}
+
+.headline .hot dd:not(.unit) {
+  color: var(--accent);
+}
+
+/* ---------- sections ---------- */
+
+section {
+  margin-top: clamp(3rem, 8vh, 5rem);
+}
+
+h2 {
+  margin: 0;
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem);
+  letter-spacing: -0.015em;
+  font-weight: 620;
+}
+
+.map-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.2rem 2rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+}
+
+.seg {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.seg legend {
+  padding: 0 0 0.4rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.seg-row {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--ink-2);
+}
+
+.seg-btn {
+  padding: 0.42rem 0.8rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dim);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.seg-btn:hover {
+  color: var(--paper);
+}
+
+.seg-btn.is-on {
+  background: var(--ink-3);
+  color: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.readout {
+  margin: 1.4rem 0 0;
+  max-width: 78ch;
+  color: var(--dim);
+  font-size: 0.97rem;
+}
+
+.readout strong {
+  color: var(--paper);
+  font-variant-numeric: tabular-nums;
+  font-weight: 620;
+}
+
+/* ---------- legend ---------- */
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.3rem;
+}
+
+.ramp {
+  flex: 1 1 auto;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #406c96, #6e8c96 40%, #c49654 62%, #e2763e 82%, #e04236);
+}
+
+.legend-end {
+  font-size: 0.76rem;
+  color: var(--faint);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend-note {
+  margin: 0.6rem 0 0;
+  max-width: 70ch;
+  font-size: 0.86rem;
+  color: var(--faint);
+}
+
+.legend-note strong {
+  color: var(--dim);
+}
+
+/* ---------- the document ---------- */
+
+.paper {
+  margin-top: 1.1rem;
+  padding: 1rem 0.35rem 1rem 0;
+  max-height: min(62vh, 620px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink-1);
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  font-size: var(--fs-mono);
+  line-height: 1.5;
+  overscroll-behavior: contain;
+}
+
+.row {
+  display: block;
+  padding: 0 0.8rem;
+  /* The tint is a background wash rather than ink, so a hot line stays as
+     readable as a cold one. Colouring the text itself made the cheap end
+     unreadable and the whole map a legibility gradient instead of a cost one. */
+  background: color-mix(in srgb, var(--tint) calc(var(--strength) * 100%), transparent);
+  color: var(--paper);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.row--empty {
+  color: transparent;
+}
+
+/* ---------- tables ---------- */
+
+table {
+  width: 100%;
+  margin-top: 1.6rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+caption {
+  padding-bottom: 0.6rem;
+  text-align: left;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+th,
+td {
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+thead th:first-child {
+  text-align: left;
+}
+
+thead th {
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+}
+
+tbody th[scope='row'] {
+  text-align: left;
+  font-weight: 450;
+  color: var(--paper);
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  word-break: break-word;
+}
+
+.worst tr.rule th,
+.worst tr.rule td {
+  border-top: 1px solid var(--accent);
+}
+
+.swatch {
+  width: 28px;
+  padding: 0;
+  border-left: 0;
+}
+
+.prices tr.is-on th,
+.prices tr.is-on td {
+  color: var(--accent);
+}
+
+/* ---------- cadence ---------- */
+
+.lede {
+  margin: 0.9rem 0 0;
+  max-width: 68ch;
+  color: var(--dim);
+}
+
+.dials {
+  display: grid;
+  gap: 1.2rem 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin-top: 1.8rem;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink-1);
+}
+
+.dial {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.dial-label {
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.dial-label output {
+  color: var(--paper);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+select,
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+select {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--ink-3);
+  color: var(--paper);
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.bill {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.2rem;
+  margin: 1.6rem 0 0;
+}
+
+.bill-figure {
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.6rem, 1.6rem + 4vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--accent);
+}
+
+.bill-note {
+  max-width: 46ch;
+  color: var(--dim);
+  font-size: 0.93rem;
+}
+
+/* ---------- method ---------- */
+
+.method p {
+  max-width: 70ch;
+  color: var(--dim);
+}
+
+.method code {
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  color: var(--paper);
+}
+
+a {
+  color: var(--accent);
+}
+
+:where(a, button, select, input):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 1ms !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .map-head {
+    align-items: flex-start;
+  }
+
+  .paper {
+    max-height: 56vh;
+  }
+
+  /* The legend ends are two lines of prose beside a bar. At this width they
+     squeezed the ramp itself down to about forty pixels, which made the one
+     thing on the page that explains the colour the smallest thing on it. */
+  .legend {
+    flex-wrap: wrap;
+  }
+
+  .ramp {
+    order: -1;
+    flex-basis: 100%;
+  }
+
+  .legend-end {
+    flex: 1 1 auto;
+  }
+
+  .legend-end:last-child {
+    text-align: right;
+  }
+
+  /* Four numeric columns against a region label left the label one word wide
+     and unreadable. The label and the rate are the row; chars and tokens are
+     the working, and the working goes away first. */
+  .worst td:nth-child(2),
+  .worst td:nth-child(3),
+  .worst thead th:nth-child(2),
+  .worst thead th:nth-child(3) {
+    display: none;
+  }
+}
