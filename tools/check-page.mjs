@@ -158,6 +158,60 @@ try {
     ok(`the control adds colour to the section map, ${flatColours} distinct colours becoming ${controlColours}`)
   }
 
+  /*
+   * 4b. What the map hands a screen reader.
+   *
+   * It is `role="img"` with a heading and a description, and that is not enough:
+   * the role drops the row elements from the accessibility tree and leaves their
+   * text in it. Measured on the committed contract before this: 294 rows put 902
+   * nodes into the tree, 608 of them carrying a line of the document, out of
+   * 1,340 on the whole page. Two thirds of what a reader walks was the picture
+   * reading the document out a second time, a line at a time, unlabelled.
+   *
+   * tokenlab's PA-F8 was the same shape one project over, 2,779 nodes of 3,144,
+   * and it is the reason this assertion exists here.
+   */
+  const client = await page.context().newCDPSession(page)
+  await client.send('Accessibility.enable')
+  {
+    const { root } = await client.send('DOM.getDocument', { depth: -1 })
+    const findDom = (node) => {
+      const attrs = node.attributes ?? []
+      for (let i = 0; i < attrs.length; i += 2) if (attrs[i] === 'id' && attrs[i + 1] === 'paper') return node
+      for (const child of node.children ?? []) {
+        const hit = findDom(child)
+        if (hit) return hit
+      }
+      return null
+    }
+    const dom = findDom(root)
+    const { nodes } = await client.send('Accessibility.getFullAXTree')
+    const byId = new Map(nodes.map((n) => [n.nodeId, n]))
+    const mapAx = nodes.find((n) => n.backendDOMNodeId === dom?.backendNodeId)
+    const names = []
+    const walk = (ax) => {
+      if (ax.name?.value) names.push(ax.name.value)
+      for (const id of ax.childIds ?? []) {
+        const child = byId.get(id)
+        if (child) walk(child)
+      }
+    }
+    if (mapAx) walk(mapAx)
+    const rows = await page.$$eval('#paper .row', (n) => n.length)
+
+    if (!mapAx) {
+      fail('the map is not in the accessibility tree at all', 'Hiding the picture is not the same as describing it.')
+    } else if (names.length !== 1) {
+      fail(
+        `the map puts ${names.length} named nodes into the accessibility tree, one per line of the document`,
+        `${rows} rows, and it reads back as ${JSON.stringify(names.slice(1, 4).join(' | ').slice(0, 120))}\n` +
+          '      role="img" drops the elements and keeps their text. The rows have to say they are decoration.',
+      )
+    } else {
+      ok(`the map is one named node for ${rows} rows: ${JSON.stringify(names[0].slice(0, 60))}`)
+    }
+  }
+
   await page.close()
 
   /* 5. The phone. A map is useless at a width that scrolls sideways. */
