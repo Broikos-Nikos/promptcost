@@ -88,16 +88,36 @@ const DOCS = [
   {
     id: 'contract',
     title: 'The build contract',
+    button: 'the prompt',
     note: 'The prompt that built this repository, re-read every 30 minutes. Frozen and hashed.',
     text: contract,
   },
   {
     id: 'contract-json',
     title: 'The same prompt, with a price table pasted in',
+    button: 'with JSON pasted in',
     note: 'The control. Composed from the two committed inputs, so the instrument can be seen to work.',
     text: pasted,
   },
 ]
+
+/**
+ * Which document the page opens on, by id.
+ *
+ * The page had `data.documents[0].id`, and the button under it read "the
+ * prompt" for whatever sat at index 0 and "with JSON pasted in" for everything
+ * else. Both are answers to "which one is the interesting one" written as a
+ * position in this array, so adding a third document here would have opened the
+ * page on it and labelled the control wrongly, with nothing to notice. The
+ * label is a field on the document now, and this is the choice, named.
+ *
+ * tokenlab MA-F8 is the same shape one project over, and its version reached a
+ * published page: the bill opened on `pricing.models[1]`.
+ */
+const OPENS_ON = 'contract'
+
+/** The one that is meant to go dark, and the reason a flat map means anything. */
+const CONTROL = 'contract-json'
 
 const measured = DOCS.map((doc) => {
   const grains = {}
@@ -108,6 +128,7 @@ const measured = DOCS.map((doc) => {
   return {
     id: doc.id,
     title: doc.title,
+    button: doc.button,
     note: doc.note,
     lines: doc.text.split('\n').length,
     chars: doc.text.length,
@@ -137,8 +158,13 @@ const scale = {
   clamped: allLineRates.filter((v) => v < pct(0.05) || v > pct(0.95)).length,
 }
 
-const base = measured[0]
-const control = measured[1]
+/*
+ * Both by id, for the reason above: these two lines are what `opensOn` and the
+ * control are measured from, and `measured[0]` would have followed a reordering
+ * of DOCS without a word.
+ */
+const base = measured.find((m) => m.id === OPENS_ON)
+const control = measured.find((m) => m.id === CONTROL)
 const readable = base.grains.line.regions.filter((r) => r.chars >= 20)
 const costs = pricing.models.map((m) => ({
   id: m.id,
@@ -158,6 +184,7 @@ const out = {
   },
   cadence: CADENCE,
   scale,
+  opensOn: OPENS_ON,
   documents: measured,
   /*
    * The headline, as numbers a gate can hold: the grain everybody draws a

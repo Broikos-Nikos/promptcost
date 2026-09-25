@@ -1,5 +1,5 @@
 {
-  "measured": "2026-09-24",
+  "measured": "2026-09-25",
   "encoding": "o200k_base",
   "inputs": {
     "contract": {
@@ -23,10 +23,12 @@
     "high": 5.2,
     "clamped": 44
   },
+  "opensOn": "contract",
   "documents": [
     {
       "id": "contract",
       "title": "The build contract",
+      "button": "the prompt",
       "note": "The prompt that built this repository, re-read every 30 minutes. Frozen and hashed.",
       "lines": 294,
       "chars": 12855,
@@ -2537,6 +2539,7 @@
     {
       "id": "contract-json",
       "title": "The same prompt, with a price table pasted in",
+      "button": "with JSON pasted in",
       "note": "The control. Composed from the two committed inputs, so the instrument can be seen to work.",
       "lines": 316,
       "chars": 14434,

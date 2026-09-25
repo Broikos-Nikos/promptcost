@@ -38,7 +38,7 @@ const el = <T extends HTMLElement>(id: string): T => {
 
 const state = {
   grain: 'section' as Grain,
-  doc: data.documents[0].id,
+  doc: data.opensOn,
   model: data.verdict.dearest.id,
   sends: data.cadence.sendsPerDay,
   days: data.cadence.days,
@@ -96,8 +96,12 @@ function drawSegments() {
         b.textContent = value
         b.title = GRAIN_NOTE[value as Grain]
       } else {
+        // The label is the document's own, not a test on its position. This read
+        // `value === data.documents[0].id ? 'the prompt' : 'with JSON pasted in'`,
+        // which called whatever sat at index 0 the prompt and everything else
+        // the control.
         const d = data.documents.find((x) => x.id === value)
-        b.textContent = value === data.documents[0].id ? 'the prompt' : 'with JSON pasted in'
+        b.textContent = d ? d.button : value
         b.title = d ? d.note : ''
       }
       b.addEventListener('click', () => {
