@@ -3,15 +3,21 @@
  *
  *   npm run check:claims
  *
- * **Every claim is a phrase with its surrounding words, and every phrase is
- * counted rather than merely found.** A bare number is not a claim: a spec gate
- * in this workspace held one as the string "107", and its negative control
- * passed against a document edited to say 108, because the file said 107 three
- * more times in other sentences. A gate that cannot fail is worse than no gate,
- * because it is quoted as evidence.
+ * **Every claim is a phrase with its surrounding words, not a bare number.** A
+ * spec gate in this workspace held one as the string "107", and its negative
+ * control passed against a document edited to say 108, because the file said
+ * 107 three more times in other sentences. A gate that cannot fail is worse
+ * than no gate, because it is quoted as evidence.
  *
- * There is a second half, and it is the one that catches the numbers nobody
- * thought to assert. After checking that everything claimed is present, this
+ * That half only asks whether each phrase is present; `times` below is
+ * compared to zero and to nothing else, and the sentence here used to say
+ * "counted rather than merely found", which it does not do. `watch-it-think`
+ * carried the same sentence over the same shape and had no second half at all
+ * to redeem it, which is `WD2-F8`.
+ *
+ * The second half is where every figure is **counted rather than merely
+ * found**, and it is the one that catches the numbers nobody thought to
+ * assert. After checking that everything claimed is present, this
  * sweeps the README for figures **of the shapes this project deals in**, an `x`
  * spread, a dollar amount, a characters-a-token rate, and fails on any one the
  * measurement does not produce anywhere. That is how a hand typed number gets
