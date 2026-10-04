@@ -27,7 +27,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 import { serve, useShared } from './serve.mjs'
-import { cost, heat, rateByLine } from '../src/lib/density.mjs'
+import { TINT_STOPS, cost, heat, rateByLine, tint } from '../src/lib/density.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const d = JSON.parse(readFileSync(resolve(root, 'src/generated/density.json'), 'utf8'))
@@ -220,6 +220,58 @@ try {
   const overflow = await phone.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
   if (overflow > 0) fail(`the page scrolls sideways by ${overflow}px at 390`, 'Every phone reader meets this before they meet the finding.')
   else ok('no horizontal overflow at 390')
+
+  /*
+   * 6. And the legend is a reading of the scale, not a second copy of it.
+   *
+   * The ramp's five colours and five percentages were written out again in
+   * `style.css`, by hand, next to the array the cells are painted from. They
+   * agreed, and that is all that stood between this page and a legend that
+   * explains the map with the wrong colours: every assertion above would have
+   * stayed green, because every one of them reads cells. A reader matching a
+   * cell against the ramp would have been reading a different scale.
+   *
+   * So the ramp is painted by `rampGradient()` now, and this compares what the
+   * browser actually resolved against what the library says, stop by stop. It
+   * is deliberately the resolved value rather than the string the page set: a
+   * gate that reads back its own input measures nothing.
+   */
+  const painted = await phone.$eval('#ramp', (n) => getComputedStyle(n).backgroundImage)
+  const colours = [...String(painted).matchAll(/rgba?\(([^)]+)\)/g)].map((m) => {
+    const p = m[1].split(/[,\s/]+/).filter(Boolean).slice(0, 3).map(Number)
+    return `rgb(${p[0]} ${p[1]} ${p[2]})`
+  })
+  const percents = [...String(painted).matchAll(/([\d.]+)%/g)].map((m) => Number(m[1]))
+  const wantColours = TINT_STOPS.map(([at]) => tint(at))
+  const wantPercents = TINT_STOPS.map(([at]) => +(at * 100).toFixed(2))
+
+  if (colours.length !== wantColours.length) {
+    fail(
+      `the ramp resolves to ${colours.length} colour stops, the scale has ${wantColours.length}`,
+      `the browser says ${JSON.stringify(String(painted).slice(0, 140))}`,
+    )
+  } else if (colours.join(' ') !== wantColours.join(' ')) {
+    fail(
+      'the ramp is not painted in the map’s own colours',
+      `the ramp says ${colours.join(', ')}
+      the cells are painted ${wantColours.join(', ')}`,
+    )
+  } else if (percents.join(' ') !== wantPercents.join(' ')) {
+    fail(
+      'the ramp’s stops are not where the scale puts them',
+      `the ramp says ${percents.join('%, ')}%, the scale says ${wantPercents.join('%, ')}%`,
+    )
+  } else {
+    ok(`the ramp is the scale: ${colours.length} stops, ${wantColours[0]} to ${wantColours[wantColours.length - 1]}, at ${wantPercents.join('%, ')}%`)
+  }
+
+  /* And the ends of the ramp are the ends of the measured scale, in words. */
+  const ends = await phone.evaluate(() => [
+    document.getElementById('legend-low').textContent.trim(),
+    document.getElementById('legend-high').textContent.trim(),
+  ])
+  is('the cold end of the ramp', ends[0], `${d.scale.high} chars/token, cheap`)
+  is('the hot end of the ramp', ends[1], `${d.scale.low}, expensive`)
 
   const legend = await phone.$eval('.ramp', (n) => n.getBoundingClientRect().width)
   if (legend < 120) fail(`the colour ramp is ${Math.round(legend)}px wide at 390`, 'It is the only thing on the page that says what the colour means.')

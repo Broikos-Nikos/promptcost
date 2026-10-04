@@ -256,7 +256,10 @@ h2 {
   flex: 1 1 auto;
   height: 10px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #406c96, #6e8c96 40%, #c49654 62%, #e2763e 82%, #e04236);
+  /* No gradient here. It was the same five colours at the same five percentages
+     as `TINT_STOPS` in `lib/density.mjs`, written out a second time, and a
+     legend that is a copy of the scale rather than a reading of it drifts the
+     first time one of them is edited. `rampGradient()` paints it. */
 }
 
 .legend-end {

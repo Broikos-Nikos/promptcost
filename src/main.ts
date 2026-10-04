@@ -19,7 +19,7 @@ import data from './generated/density.json'
 // every gate on purpose: a typed second copy for the browser is two
 // implementations of the same arithmetic, which agree about a mistake sooner or
 // later. `evalkit` had exactly that and shipped a headline one off its library.
-import { cost, heat, rateByLine } from './lib/density.mjs'
+import { cost, heat, rampGradient, rateByLine, tint } from './lib/density.mjs'
 
 type Region = { from: number; to: number; chars: number; tokens: number; charsPerToken: number; label: string }
 type Grain = 'section' | 'paragraph' | 'line'
@@ -55,29 +55,11 @@ const money = (n: number) => `$${n.toFixed(n >= 0.1 ? 2 : 4)}`
  * version faded to the background at heat 0 and the section-grain map looked
  * like a rendering failure rather than like a flat measurement, which is the
  * one reading this page cannot afford.
+ *
+ * `tint` and its five stops live in `lib/density.mjs` now, with `heat`, because
+ * the legend below the map was a second hand written copy of them in CSS. See
+ * the note on `TINT_STOPS`.
  */
-function tint(h: number): string {
-  const stops: Array<[number, [number, number, number]]> = [
-    [0, [64, 108, 150]],
-    [0.4, [110, 140, 150]],
-    [0.62, [196, 150, 84]],
-    [0.82, [226, 118, 62]],
-    [1, [224, 66, 54]],
-  ]
-  let a = stops[0]
-  let b = stops[stops.length - 1]
-  for (let i = 0; i < stops.length - 1; i++) {
-    if (h >= stops[i][0] && h <= stops[i + 1][0]) {
-      a = stops[i]
-      b = stops[i + 1]
-      break
-    }
-  }
-  const span = b[0] - a[0] || 1
-  const t = (h - a[0]) / span
-  const c = a[1].map((v, i) => Math.round(v + (b[1][i] - v) * t))
-  return `rgb(${c[0]} ${c[1]} ${c[2]})`
-}
 
 function drawSegments() {
   for (const [id, h] of [
@@ -264,6 +246,7 @@ function render() {
 const v = data.verdict
 el('kpi-section').textContent = `${v.sectionBand}x`
 el('kpi-line').textContent = `${v.lineBand}x`
+el('ramp').style.backgroundImage = rampGradient()
 el('legend-low').textContent = `${data.scale.high} chars/token, cheap`
 el('legend-high').textContent = `${data.scale.low}, expensive`
 el('method-provenance').textContent =

@@ -191,3 +191,48 @@ export function heat(charsPerToken, scale) {
   const t = (scale.high - charsPerToken) / (scale.high - scale.low)
   return Math.max(0, Math.min(1, Number(t.toFixed(4))))
 }
+
+/*
+ * The colour of a heat, and the ramp that claims to explain it.
+ *
+ * These five stops were written twice: once here, as the array the cells are
+ * painted from, and once in `style.css`, as a `linear-gradient` with the same
+ * five colours at the same five percentages. They agreed, which is the only
+ * reason the legend was not already a lie, and nothing anywhere would have said
+ * so if someone had changed one of them. A legend is a label on a scale: a
+ * label that is a second copy of the thing it names is a label that drifts.
+ *
+ * Moved here at tick 197, with `watch-it-think`'s field, as the same class of
+ * defect: the ramp is now painted by `rampGradient()` from this array, so the
+ * legend cannot disagree with the map. `check:page` reads the ramp's computed
+ * stops back out of the browser and holds them to this list.
+ */
+export const TINT_STOPS = [
+  [0, [64, 108, 150]],
+  [0.4, [110, 140, 150]],
+  [0.62, [196, 150, 84]],
+  [0.82, [226, 118, 62]],
+  [1, [224, 66, 54]],
+]
+
+export function tint(h) {
+  let a = TINT_STOPS[0]
+  let b = TINT_STOPS[TINT_STOPS.length - 1]
+  for (let i = 0; i < TINT_STOPS.length - 1; i++) {
+    if (h >= TINT_STOPS[i][0] && h <= TINT_STOPS[i + 1][0]) {
+      a = TINT_STOPS[i]
+      b = TINT_STOPS[i + 1]
+      break
+    }
+  }
+  const span = b[0] - a[0] || 1
+  const t = (h - a[0]) / span
+  const c = a[1].map((v, i) => Math.round(v + (b[1][i] - v) * t))
+  return `rgb(${c[0]} ${c[1]} ${c[2]})`
+}
+
+/** The legend's ramp, left to right, from the stops the cells use. */
+export function rampGradient() {
+  const stops = TINT_STOPS.map(([at, c]) => `rgb(${c[0]} ${c[1]} ${c[2]}) ${+(at * 100).toFixed(2)}%`)
+  return `linear-gradient(90deg, ${stops.join(', ')})`
+}
