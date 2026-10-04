@@ -106,13 +106,24 @@
           <span class="bill-figure" id="bill">&mdash;</span>
           <span class="bill-note" id="bill-note"></span>
         </p>
-        <table class="prices">
-          <caption>Every model in the committed table, at the dials above</caption>
-          <thead>
-            <tr><th scope="col">model</th><th scope="col">input</th><th scope="col">per send</th><th scope="col">over the window</th></tr>
-          </thead>
-          <tbody id="prices"></tbody>
-        </table>
+        <!--
+          A table wider than its column has to be reachable, and a scrollable
+          region has to be focusable or a keyboard visitor cannot get to the
+          half that is off screen. tabindex and an accessible name are what
+          make it a region rather than a trap. Measured at tick 198 by
+          tools/check-fills.mjs: 10 pixels wider than its column at 320.
+          The pattern is tokenlab's div.table-wrap, found by the sweep rather
+          than invented here.
+        -->
+        <div class="table-wrap" tabindex="0" role="region" aria-label="The price table, scrollable">
+          <table class="prices">
+            <caption>Every model in the committed table, at the dials above</caption>
+            <thead>
+              <tr><th scope="col">model</th><th scope="col">input</th><th scope="col">per send</th><th scope="col">over the window</th></tr>
+            </thead>
+            <tbody id="prices"></tbody>
+          </table>
+        </div>
       </section>
 
       <section class="method" aria-labelledby="method-h">
