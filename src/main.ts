@@ -135,6 +135,7 @@ function renderMap() {
   lines.forEach((line, i) => {
     const row = document.createElement('span')
     row.className = 'row'
+    row.dataset.row = ''
     /*
      * The map is `role="img"` with a description, and that is not enough: the
      * role drops these elements from the accessibility tree and leaves their

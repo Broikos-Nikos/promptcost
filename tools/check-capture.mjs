@@ -113,7 +113,7 @@ try {
   await page.click(`#doc .seg-btn[data-value="${recorded.looked.document}"]`)
   await page.click(`#grain .seg-btn[data-value="${recorded.looked.grain}"]`)
   const now = await page.evaluate(() => {
-    const rows = [...document.querySelectorAll('#paper .row')]
+    const rows = [...document.querySelectorAll('#paper [data-row]')]
     return {
       lines: rows.length,
       distinctColours: new Set(rows.map((r) => getComputedStyle(r).backgroundColor)).size,

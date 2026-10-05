@@ -84,7 +84,7 @@ try {
         continue
       }
 
-      const painted = await page.$$eval('#paper .row', (rows) =>
+      const painted = await page.$$eval('#paper [data-row]', (rows) =>
         rows.map((r) => ({ bg: getComputedStyle(r).backgroundColor, empty: r.classList.contains('row--empty') })),
       )
 
@@ -146,9 +146,9 @@ try {
    */
   await page.click(`#doc .seg-btn[data-value="contract"]`)
   await page.click('#grain .seg-btn[data-value="section"]')
-  const flatColours = await page.$$eval('#paper .row', (rows) => new Set(rows.map((r) => getComputedStyle(r).backgroundColor)).size)
+  const flatColours = await page.$$eval('#paper [data-row]', (rows) => new Set(rows.map((r) => getComputedStyle(r).backgroundColor)).size)
   await page.click(`#doc .seg-btn[data-value="contract-json"]`)
-  const controlColours = await page.$$eval('#paper .row', (rows) => new Set(rows.map((r) => getComputedStyle(r).backgroundColor)).size)
+  const controlColours = await page.$$eval('#paper [data-row]', (rows) => new Set(rows.map((r) => getComputedStyle(r).backgroundColor)).size)
   if (controlColours <= flatColours) {
     fail(
       'pasting the JSON block does not add a colour to the section map',
@@ -197,7 +197,7 @@ try {
       }
     }
     if (mapAx) walk(mapAx)
-    const rows = await page.$$eval('#paper .row', (n) => n.length)
+    const rows = await page.$$eval('#paper [data-row]', (n) => n.length)
 
     if (!mapAx) {
       fail('the map is not in the accessibility tree at all', 'Hiding the picture is not the same as describing it.')
@@ -273,7 +273,7 @@ try {
   is('the cold end of the ramp', ends[0], `${d.scale.high} chars/token, cheap`)
   is('the hot end of the ramp', ends[1], `${d.scale.low}, expensive`)
 
-  const legend = await phone.$eval('.ramp', (n) => n.getBoundingClientRect().width)
+  const legend = await phone.$eval('[data-ramp]', (n) => n.getBoundingClientRect().width)
   if (legend < 120) fail(`the colour ramp is ${Math.round(legend)}px wide at 390`, 'It is the only thing on the page that says what the colour means.')
   else ok(`the colour ramp is ${Math.round(legend)}px wide at 390`)
   await phone.close()
