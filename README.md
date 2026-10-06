@@ -2,6 +2,8 @@
 
 ### A cost heatmap over a prompt is flat at the grain everyone draws it at. The bill is how often you send it.
 
+**[The page is live.](https://broikos-nikos.github.io/promptcost/)** The heatmap and the argument against it are both on it.
+
 Measured on a real system prompt, 12,855 characters and 3,157 tokens: the twelve
 sections of it span **1.18x** in cost per character on screen. Twelve rectangles
 of the same colour. Drop to line grain and the same document spans **1.73x**,
