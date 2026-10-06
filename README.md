@@ -109,6 +109,8 @@ npm run build             # typecheck, five gates, then vite
 npm run verify            # the two gates that need a real browser
 ```
 
+`npm run capture`, which makes the recording at the top of this file, needs one program npm does not install: **ffmpeg**. Install it (`winget install Gyan.FFmpeg`, `brew install ffmpeg`, `apt install ffmpeg`). Nothing else here needs it and the page does not.
+
 `npm run build:density` prints the table above. Both inputs are in `data/`, and
 their sha256 is written into the measurement, so
 `node tools/check-density.mjs` can refuse a figure computed from a file that has
