@@ -149,3 +149,8 @@ inverted ramp leaves every number on the page correct.
 
 MIT, for the code. `data/contract.md` and `data/pricing.json` are this author's
 own files, committed here so the measurement can be reproduced.
+
+`npm run capture` also reads one environment variable: **`FFMPEG`**, the path
+to the ffmpeg it should use. Without it the bare name is resolved through PATH,
+and either way the program is checked before the browser starts rather than
+after the whole recording, which is `watch-it-think`'s WS-F6.
