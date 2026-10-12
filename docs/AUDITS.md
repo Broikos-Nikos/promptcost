@@ -5,7 +5,7 @@ Commit messages cite identifiers like `PCON-F1`. This is what they refer to.
 No audit pass has been run against this project yet. Every finding here was
 raised by a sweep of a class found in another project in the same workspace.
 
-**12 findings, 9 closed, 3 open**.
+**12 findings, 10 closed, 2 open**.
 
 Held to the workspace queue this project is built from by
 `tools/check-audit-status.mjs`, which fails if a row here says anything the
@@ -17,13 +17,13 @@ Not a perspective and not an agent. Findings raised against this project while
 a class found somewhere else in the workspace was being swept across all eight,
 kept here because commit messages cite them like any other.
 
-12 findings, 9 closed.
+12 findings, 10 closed.
 
 | id | severity | status | finding |
 |---|---|---|---|
 | `PCAP-F1` | medium | fixed, tick 226 | capture.mjs hands the committed GIF to ffmpeg, and never asks whether ffmpeg is installed |
 | `PCON-F1` | medium | fixed, tick 176 | The grain select is bounded at 1.35:1 and the range inputs have no boundary of their own |
-| `PFOLD-F1` | medium | open | The picture the page is built on is below the fold at both widths |
+| `PFOLD-F1` | medium | fixed, tick 230 | The picture the page is built on is below the fold at both widths |
 | `PGRP-F1` | medium | fixed, tick 182 | serve.mjs kills a process group the spawn never creates, so cleanup off Windows leaves the server running |
 | `PTBL-F1` | medium | fixed, tick 198 | The price table is 10 pixels wider than its column at 320 and nothing in this project looks below 390 |
 | `PPOS-F1` | medium | fixed, tick 146 | The opening document and the label under it are chosen by position in the documents array |
