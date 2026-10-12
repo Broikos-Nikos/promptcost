@@ -2,13 +2,8 @@
 
 ### A cost heatmap over a prompt is flat at the grain everyone draws it at. The bill is how often you send it.
 
-<!-- No live link yet. This repository was deleted from GitHub on 7 October
-     under D27 and is scheduled to be uploaded again on 12 October, D28. The link
-     and the sentence below go back in on that day, which is step 5 of the
-     upload sequence in state/schedule.json. Until then a claim that the page
-     is live would be a claim nothing supports: the URL returned 404 when this
-     was written, measured. -->
-The heatmap and the argument against it are both on it.
+**[The page is live.](https://broikos-nikos.github.io/promptcost/)** The heatmap
+and the argument against it are both on it.
 
 Measured on a real system prompt, 12,855 characters and 3,157 tokens: the twelve
 sections of it span **1.18x** in cost per character on screen. Twelve rectangles
