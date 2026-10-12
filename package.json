@@ -17,6 +17,7 @@
     "check:grain": "node tools/check-grain.mjs",
     "check:claims": "node tools/check-claims.mjs",
     "check:page": "node tools/check-page.mjs",
+    "check:fold": "node tools/check-fold.mjs",
     "check:capture": "node tools/check-capture.mjs",
     "build:density": "node tools/build-density.mjs",
     "capture": "node tools/capture.mjs",
