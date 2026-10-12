@@ -76,7 +76,7 @@ main,
 /* ---------- masthead ---------- */
 
 .masthead {
-  padding: clamp(2.5rem, 7vh, 5rem) 0 2.5rem;
+  padding: clamp(1.5rem, 4vh, 3rem) 0 1.5rem;
 }
 
 .eyebrow {
@@ -89,9 +89,9 @@ main,
 }
 
 h1 {
-  margin: 0 0 1.1rem;
-  max-width: 21ch;
-  font-size: clamp(2rem, 1.2rem + 3.4vw, 3.9rem);
+  margin: 0 0 0.7rem;
+  max-width: 24ch;
+  font-size: clamp(1.8rem, 1.1rem + 2.6vw, 3.1rem);
   line-height: 1.04;
   letter-spacing: -0.024em;
   font-weight: 650;
@@ -109,7 +109,7 @@ h1 em {
 }
 
 .standfirst {
-  margin: 0 0 2.2rem;
+  margin: 0 0 1.3rem;
   max-width: 62ch;
   color: var(--dim);
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.14rem);
@@ -127,7 +127,7 @@ h1 em {
 }
 
 .headline > div {
-  padding: 1.1rem 1.2rem 1.2rem;
+  padding: 0.8rem 1rem 0.9rem;
   background: var(--ink-1);
 }
 
@@ -139,15 +139,15 @@ h1 em {
 }
 
 .headline dd {
-  margin: 0.35rem 0 0;
+  margin: 0.25rem 0 0;
   font-variant-numeric: tabular-nums;
-  font-size: clamp(1.9rem, 1.4rem + 1.6vw, 2.7rem);
+  font-size: clamp(1.7rem, 1.25rem + 1.3vw, 2.3rem);
   line-height: 1;
   letter-spacing: -0.03em;
 }
 
 .headline .unit {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
   font-size: 0.85rem;
   line-height: 1.35;
   color: var(--faint);
@@ -162,6 +162,18 @@ h1 em {
 
 section {
   margin-top: clamp(3rem, 8vh, 5rem);
+}
+
+/*
+ * PFOLD-F1, swept from chunkline CME2-F4. The map is the thing this page is an
+ * argument about and it started 59 pixels below the fold at 1280x800 and 122
+ * below at 390x844, so a reader who does not already believe the argument met
+ * a headline and three numbers and had to take the picture on trust. The air
+ * above the first section is the last of the masthead's air, and the only
+ * section that pays for it is the one nobody has seen yet.
+ */
+main > section:first-child {
+  margin-top: clamp(1.25rem, 3vh, 2rem);
 }
 
 h2 {
@@ -500,6 +512,38 @@ a {
 }
 
 @media (max-width: 560px) {
+
+  /*
+   * PFOLD-F1, the phone half. With the key above it the heatmap started at 754
+   * against a fold of 844, which is 90 pixels of a 473 pixel picture. The key
+   * is two lines of prose and a ramp, and under the picture it is still the
+   * first thing below it. 220 pixels of the map are on the first screen now.
+   */
+  section.map {
+    display: flex;
+    flex-direction: column;
+  }
+
+  section.map > .map-head { order: 0; }
+  section.map > .readout { order: 1; }
+  section.map > .paper { order: 2; }
+  section.map > .alt { order: 3; }
+  section.map > .legend { order: 4; }
+  section.map > .legend-note { order: 5; }
+  section.map > .worst { order: 6; }
+
+  /*
+   * PFOLD-F1. Three stacked figures are 359 pixels of a 844 pixel window, which
+   * is what put the map 122 below the fold on a phone. Two across, with the one
+   * the page ends on spanning, is 2 rows rather than 3 and reads the same.
+   */
+  .headline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .headline > div.hot {
+    grid-column: 1 / -1;
+  }
   .map-head {
     align-items: flex-start;
   }
