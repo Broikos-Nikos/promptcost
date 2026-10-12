@@ -51,16 +51,6 @@
         A cost heatmap over a prompt is <em>flat</em> at the grain everyone draws it at.
         <span class="h1-second">The bill is how often you send it.</span>
       </h1>
-      <p class="standfirst">
-        This is the prompt that built this repository, measured with the tokenizer the models use. Switch the grain and
-        watch the map appear: the structure is below the level a heatmap is usually pointed at, and what makes a line
-        expensive is its punctuation, not its subject.
-      </p>
-      <dl class="headline">
-        <div><dt>section grain</dt><dd id="kpi-section">&mdash;</dd><dd class="unit">spread across the map</dd></div>
-        <div><dt>line grain</dt><dd id="kpi-line">&mdash;</dd><dd class="unit">same document, same scale</dd></div>
-        <div class="hot"><dt>30 days of this prompt</dt><dd id="kpi-spread">&mdash;</dd><dd class="unit" id="kpi-spread-unit">between the dearest and cheapest model</dd></div>
-      </dl>
     </header>
 
     <main>
@@ -102,6 +92,30 @@
           <tbody id="worst"></tbody>
         </table>
       </section>
+
+      <!--
+        PFOLD-F1, swept from chunkline CME2-F4. The standfirst and the three
+        figures used to sit in the masthead, and with them there the heatmap
+        itself started at 886 pixels against a fold of 800, and at 1150
+        against 844 on a phone. The whole page is an argument that this
+        picture is the wrong one for the question, and that argument cannot be
+        made to somebody who has not seen the picture.
+
+        They read better here in any case: 1.18x and 1.73x are a summary of
+        the map, and a summary is worth more once the thing it summarises has
+        been seen. Nothing was removed. tools/check-fold.mjs holds the paper
+        above the fold at both widths.
+      -->
+      <p class="standfirst">
+        This is the prompt that built this repository, measured with the tokenizer the models use. Switch the grain and
+        watch the map appear: the structure is below the level a heatmap is usually pointed at, and what makes a line
+        expensive is its punctuation, not its subject.
+      </p>
+      <dl class="headline">
+        <div><dt>section grain</dt><dd id="kpi-section">&mdash;</dd><dd class="unit">spread across the map</dd></div>
+        <div><dt>line grain</dt><dd id="kpi-line">&mdash;</dd><dd class="unit">same document, same scale</dd></div>
+        <div class="hot"><dt>30 days of this prompt</dt><dd id="kpi-spread">&mdash;</dd><dd class="unit" id="kpi-spread-unit">between the dearest and cheapest model</dd></div>
+      </dl>
 
       <section class="cadence" aria-labelledby="cadence-h">
         <h2 id="cadence-h">The thing the map cannot show</h2>
