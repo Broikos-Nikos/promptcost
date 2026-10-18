@@ -31,5 +31,5 @@ kept here because commit messages cite them like any other.
 | `PLEG-F1` | medium | fixed, tick 197 | The legend is a second hand written copy of the scale the cells are painted from, in CSS, and nothing compares them |
 | `PGIF-F1` | low | open | The loop runs 8.76 seconds, above the five and a half tokenlab settled on |
 | `PPRE-F1` | low | fixed, tick 165 | npm run verify started a server and handed the same missing browser to every gate in turn |
-| `PTAP-F1` | low | open | Controls shorter than 24 pixels at a phone width |
+| `PTAP-F1` | low | fixed, tick 234 | Controls shorter than 24 pixels at a phone width |
 | `PFF-F1` | low | fixed, tick 226 | npm run capture resolves ffmpeg off PATH and asks for it only after the browser has launched |

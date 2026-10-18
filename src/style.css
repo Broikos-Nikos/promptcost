@@ -431,6 +431,17 @@ input[type='range'] {
   accent-color: var(--accent);
 }
 
+/*
+ * PTAP-F1. A range input is 16 pixels tall because that is the track the
+ * user agent draws, and the track is the target: a press anywhere along it
+ * moves the thumb. WCAG 2.5.8 AA asks for 24. The height goes on the input
+ * rather than on the thumb, because enlarging the thumb would change what
+ * the control looks like and this only changes where it can be hit.
+ */
+input[type='range'] {
+  height: 24px;
+}
+
 select {
   padding: 0.5rem 0.6rem;
   border: 1px solid var(--edge-control);
@@ -478,6 +489,17 @@ select {
 
 a {
   color: var(--accent);
+}
+
+/*
+ * PTAP-F1 again, for the one link on the page: 333.2 by 23 on a laptop and
+ * 303.6 by 21 on a phone, which is the line box of its text, because an
+ * inline link has no height of its own. The padding is vertical only, so
+ * the hit area grows where it was short and the line does not move.
+ */
+.repo a {
+  display: inline-block;
+  padding: 0.3rem 0;
 }
 
 /*
