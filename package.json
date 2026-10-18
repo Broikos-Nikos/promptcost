@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "card": "node tools/card.mjs",
     "typecheck": "tsc --noEmit",
-    "check": "npm run check:source && npm run check:licence && npm run check:density && npm run check:grain && npm run check:claims",
+    "check": "npm run check:source && npm run check:licence && npm run check:density && npm run check:grain && npm run check:claims && npm run check:loop",
     "check:source": "node tools/check-source.mjs",
     "check:licence": "node tools/check-licence.mjs",
     "check:density": "node tools/check-density.mjs",
@@ -20,6 +20,7 @@
     "check:fold": "node tools/check-fold.mjs",
     "check:capture": "node tools/check-capture.mjs",
     "check:targets": "node tools/check-targets.mjs",
+    "check:loop": "node tools/check-loop.mjs",
     "build:density": "node tools/build-density.mjs",
     "capture": "node tools/capture.mjs",
     "verify": "node tools/verify.mjs"

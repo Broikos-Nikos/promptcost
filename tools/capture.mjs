@@ -19,6 +19,7 @@
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { HOLDS } from './choreography.mjs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
@@ -117,23 +118,23 @@ try {
    * heatmap and has no idea what this page is arguing.
    */
   await grain('section')
-  await page.waitForTimeout(1700)
+  await page.waitForTimeout(HOLDS[0].ms)
   await grain('paragraph')
-  await page.waitForTimeout(1100)
+  await page.waitForTimeout(HOLDS[1].ms)
   await grain('line')
-  await page.waitForTimeout(1900)
+  await page.waitForTimeout(HOLDS[2].ms)
 
   // Back to flat, then the control, so the last thing the loop shows is the one
   // region that goes dark when there is genuinely something to draw.
   await grain('section')
-  await page.waitForTimeout(900)
+  await page.waitForTimeout(HOLDS[3].ms)
   await doc('contract-json')
-  await page.waitForTimeout(700)
+  await page.waitForTimeout(HOLDS[4].ms)
   await page.evaluate(() => {
     const paper = document.getElementById('paper')
     if (paper) paper.scrollTo({ top: paper.scrollHeight, behavior: 'smooth' })
   })
-  await page.waitForTimeout(2200)
+  await page.waitForTimeout(HOLDS[5].ms)
 
   seconds = (Date.now() - startedAt) / 1000
 
