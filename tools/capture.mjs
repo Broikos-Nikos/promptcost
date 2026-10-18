@@ -19,7 +19,7 @@
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
-import { HOLDS } from './choreography.mjs'
+import { HOLDS, LEAD_IN } from './choreography.mjs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
@@ -50,6 +50,7 @@ const FAIL_AT = process.env.CAPTURE_FAIL_AT ?? ''
 let looked
 let seconds
 let crop
+let endedAt
 
 let browser = null
 let context = null
@@ -136,6 +137,16 @@ try {
   })
   await page.waitForTimeout(HOLDS[5].ms)
 
+  /*
+   * The choreography ends here and the recorder does not: reading the end
+   * state and closing the context are still being filmed. Before tick 235
+   * the encoder trimmed the start and nothing trimmed the end, so about
+   * 0.7s of the GIF was however long those two calls happened to take, and
+   * check:loop had no way to know. The file's length is now the script's
+   * length plus the lead in, and nothing else.
+   */
+  endedAt = Date.now()
+
   seconds = (Date.now() - startedAt) / 1000
 
   looked = await page.evaluate(() => {
@@ -196,9 +207,9 @@ try {
   const palette = resolve(WORK, 'palette.png')
   const filters = `${crop},fps=${FPS},scale=${WIDTH}:-1:flags=lanczos`
 
-  const LEAD_IN = 0.3
-  const offset = Math.max(0, (startedAt - videoStart) / 1000 - LEAD_IN)
-  const trim = ['-ss', String(offset)]
+  const offset = Math.max(0, (startedAt - videoStart) / 1000 - LEAD_IN / 1000)
+  const duration = (LEAD_IN + (endedAt - startedAt)) / 1000
+  const trim = ['-ss', String(offset), '-t', String(duration)]
   /*
    * The second seam, at the encoder.
    *

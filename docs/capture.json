@@ -4,8 +4,8 @@
   "fps": 8,
   "width": 880,
   "crop": "crop=1280:904:0:0",
-  "seconds": 5.6,
-  "bytes": 957159,
+  "seconds": 5.8,
+  "bytes": 1113862,
   "looked": {
     "grain": "section",
     "document": "contract-json",
